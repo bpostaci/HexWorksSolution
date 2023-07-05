@@ -24,7 +24,7 @@ namespace HexWorks
         NoExecute = 1UL << 63
     }
 
-    
+    /* PTE64 1B NoExecute, 11B WS, 5B Reserved1, 36B pfn, 12bit flags */
 
     public class PteEntry64 : MemoryAddress64
     {
@@ -34,7 +34,7 @@ namespace HexWorks
         }
         public HardwarePteFlags Flags => (HardwarePteFlags)(this.Value & 0x8000000000000FFFUL);
 
-        public ulong Pfn => (this.Value >> 12) & 0xFFFFFFFFFUL; // 9xF = 2 ^ 36 -> pfn size is 36 bit.
+        public MemoryAddress64 Pfn => (this.Value >> 12) & 0xFFFFFFFFFUL; // 9xF = 2 ^ 36 -> pfn size is 36 bit.
 
         public ulong SoftwareWsIndex
         {
@@ -95,14 +95,6 @@ namespace HexWorks
         public bool IsPrototype()
         {
             return Flags.HasFlag(HardwarePteFlags.Prototype);
-        }
-
-        public static PteEntry64 Create(ulong pageFrame, HardwarePteFlags flags)
-        {
-            ulong pteAddress=0;
-            pteAddress = (pteAddress & 0xFFF) | (pageFrame << 12);
-            pteAddress = (pteAddress & ~0xFFFUL) | ((ulong)flags & 0xFFF);
-            return new PteEntry64(pteAddress); 
         }
 
         public string GetFlagsAsString()
