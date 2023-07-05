@@ -1,18 +1,21 @@
-MemoryAddress value object implementation
+# MemoryAddress value object implementation
 
 -  Contians 2 MemoryAddress class for 64 bit use MemoryAddress64 and for 32bit use MemoryAddress32 class
 -  Use for cross compile: "Conditional compilation symbols" X64
--  
+
+````
 Example:
 #if X64 
     using MemoryAddress = HexWorks.MemoryAddress64;
 #else
     using MemoryAddress = HexWorks.MemoryAddress32;
 #endif 
-
+````
 
 USAGE: 
 
+````
+  ASSINGMENT: 
             /*
             MemoryAddress p1 = 0xFFAAEEEE99887766;
             MemoryAddress p2 = "0xFFAAEEEE99887766";
@@ -52,8 +55,9 @@ USAGE:
             Console.WriteLine($"High Bytes        :{address1.HighBytes().ToHexString()}");
             Console.WriteLine($"Low  Bytes        :{address1.LowBytes().ToHexString()}");
         }
+```
+OUTPUT:
 
-{
 /*
 Prefix            :0x000001e849be0000
 Prefix+Capital    :0x000001E849BE0000
@@ -73,4 +77,5 @@ Bits Formated     :00000000.00000000.00000001.11101000.01001001.10111110.0001000
 High Bytes        :00000000000001e8
 Low  Bytes        :0000000049be1000
 */
-}
+
+```
