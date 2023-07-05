@@ -30,9 +30,7 @@ namespace ExampleUsage
             MemoryAddress offset = 0x1000;
 
             var nextAddress = address1 + offset;
-            nextAddress = 0x16; 
-
-
+            
             PrintAddress(nextAddress);
 
             /*

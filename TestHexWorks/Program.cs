@@ -11,7 +11,14 @@ namespace TestHexWorks
     {
         static void Main(string[] args)
         {
-            
+
+            PteEntry64 e = new PteEntry64(0x800000041BFB4963);
+            Console.WriteLine(e.ToBits());
+            MemoryAddress64 f = (ulong)e.Flags; 
+            Console.WriteLine(f.ToBits());
+
+            Console.WriteLine(e.GetFlagsAsString());
+
 
 
             MemoryAddress64 address1 = 0xffffba88921845a0;
