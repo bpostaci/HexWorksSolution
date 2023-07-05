@@ -53,9 +53,8 @@ USAGE:
             Console.WriteLine($"Low  Bytes        :{address1.LowBytes().ToHexString()}");
         }
 
-
-OUTPUT:
-
+{
+/*
 Prefix            :0x000001e849be0000
 Prefix+Capital    :0x000001E849BE0000
 Plain             :000001e849be0000
@@ -73,3 +72,5 @@ Bits              :0000000000000000000000011110100001001001101111100001000000000
 Bits Formated     :00000000.00000000.00000001.11101000.01001001.10111110.00010000.00000000
 High Bytes        :00000000000001e8
 Low  Bytes        :0000000049be1000
+*/
+}
