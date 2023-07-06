@@ -92,6 +92,31 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(address3 == address1);
         }
 
+        [TestMethod]
+        public void MemoryAddress64_ValidInput_ConvertsCorrectly()
+        {
+            byte[] validByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
+            MemoryAddress64 address = new MemoryAddress64(validByteArray, false);
+
+            Assert.IsTrue(0x123456789ABCDEF0 == address.Value);
+
+            //Be Careful the little-endian is the default !!!
+            byte[] validByteArray2 = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
+            MemoryAddress64 address2 = new MemoryAddress64(validByteArray2, true);
+
+            Assert.IsTrue(0xF0DEBC9A78563412 == address2.Value);
+        }
+
+        [TestMethod]
+        public void MemoryAddress64_InvalidInput_ThrowsArgumentException()
+        {
+            byte[] invalidByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0xFF };
+            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress64(invalidByteArray));
+
+            byte[] invalidByteArray2 = new byte[] { 0x12, 0x34 };
+            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress64(invalidByteArray2));
+
+        }
 
         [TestMethod]
         public void Test_Sum_Substract()

@@ -73,7 +73,30 @@ namespace UnitTestMemoryAddress
                 MemoryAddress32 a3 = "0xFFEEDDCC00112244";
             });
         }
+        [TestMethod]
+        public void MemoryAddress32_ValidInput_ConvertsCorrectly()
+        {
+            byte[] validByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78 };
+            MemoryAddress32 address = new MemoryAddress32(validByteArray,false);
 
+            Assert.IsTrue(0x12345678 == address.Value);
+
+            byte[] validByteArray2 = new byte[] { 0x12, 0x34, 0x56, 0x78 };
+            MemoryAddress32 address2 = new MemoryAddress32(validByteArray2, true);
+
+            Assert.IsTrue(0x78563412 == address2.Value);
+        }
+
+        [TestMethod]
+        public void MemoryAddress32_InvalidInput_ThrowsArgumentException()
+        {
+            byte[] invalidByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A };
+            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress32(invalidByteArray));
+
+            byte[] invalidByteArray2 = new byte[] { 0x12, 0x34 };
+            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress32(invalidByteArray2));
+
+        }
 
         [TestMethod]
         public void Test_High_Low_bits()

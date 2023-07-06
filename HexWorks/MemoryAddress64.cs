@@ -34,8 +34,10 @@ namespace HexWorks
             _value = (ulong)ptr;
         }
 
-        public MemoryAddress64(byte[] byteArray)
-        {   
+        public MemoryAddress64(byte[] byteArray,bool IsLittleEndian = true)
+        {
+            if (byteArray.Length != 8) throw new ArgumentException("byte array size must fit with 64 bit (8 bytes)");
+            if(!IsLittleEndian) Array.Reverse(byteArray);   
             _value =  (ulong) BitConverter.ToInt64(byteArray, 0);
         }
 

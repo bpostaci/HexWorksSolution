@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace HexWorks
 {
+
+
     /// <summary>
     /// MemoryAddress32 is an immutable value object thats stores memory address for 32 bit.
     /// </summary>
@@ -31,10 +33,22 @@ namespace HexWorks
         {
             _value = (UInt32)ptr;
         }
-
-        public MemoryAddress32(byte[] byteArray)
+        /// <summary>
+        /// Constructor for a MemoryAddress from bytearray
+        /// </summary>
+        /// <param name="byteArray"> Default Should be little endian 0x12345678 => { 0x78, 0x56, 0x34, 0x12 } </param>
+        /// <param name="IsLitteEndian">To change it make it false 0x12345678 => { 0x12 0x34 0x56 0x78 } </param>
+        /// <exception cref="ArgumentException"></exception>
+        public MemoryAddress32(byte[] byteArray,bool IsLitteEndian =true)
         {
-            _value = (UInt32)BitConverter.ToInt64(byteArray, 0);
+            if (byteArray.Length != 4) throw new ArgumentException("byte array size must fit with 32 bit (4 bytes)"); 
+            
+            if(!IsLitteEndian)
+            {
+                Array.Reverse(byteArray);
+            }
+            
+            _value = (UInt32)BitConverter.ToUInt32(byteArray, 0);
         }
 
         public MemoryAddress32(string hexString)

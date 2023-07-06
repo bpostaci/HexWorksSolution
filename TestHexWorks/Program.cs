@@ -12,6 +12,17 @@ namespace TestHexWorks
         static void Main(string[] args)
         {
 
+            MemoryAddress32 test = "0x1234";
+            var arr = test.ToByteArray();
+
+
+            byte[] validByteArray = new byte[] { 0x12, 0x34 };
+            MemoryAddress32 address = new MemoryAddress32(validByteArray,false);
+            Console.WriteLine( address.ToHexString());
+            byte[] validByteArray2 = new byte[] { 0x12, 0x34, };
+            MemoryAddress32 a2 = new MemoryAddress32(validByteArray2);
+            Console.WriteLine(a2.ToHexString());
+
             PteEntry64 e = new PteEntry64(0x800000041BFB4963);
             Console.WriteLine(e.ToBits());
             MemoryAddress64 f = (ulong)e.Flags; 
