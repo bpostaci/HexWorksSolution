@@ -137,5 +137,61 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(res4 == 0xfeff); 
 
         }
+
+        [TestMethod]
+        public void OperatorOverloads_Test()
+        {
+            MemoryAddress64 address1 = new MemoryAddress64(10);
+            MemoryAddress64 address2 = new MemoryAddress64(5);
+            UInt32 value = 2;
+
+            MemoryAddress64 result;
+
+            // Addition operator
+            result = address1 + address2;
+            Assert.IsTrue(result.Value == 15);
+
+            result = address1 + value;
+            Assert.IsTrue(result.Value == 12);
+
+            // Subtraction operator
+            result = address1 - address2;
+            Assert.IsTrue(result.Value == 5);
+
+            result = address1 - value;
+            Assert.IsTrue(result.Value == 8);
+
+            // Bitwise AND operator
+            result = address1 & address2;
+            Assert.IsTrue(result.Value == 0);
+
+            // Bitwise OR operator
+            result = address1 | address2;
+            Assert.IsTrue(result.Value == 15);
+
+            // Bitwise XOR operator
+            result = address1 ^ address2;
+            Assert.IsTrue(result.Value == 15);
+
+            // Left shift operator
+            result = address1 << 2;
+            Assert.IsTrue(result.Value == 40);
+
+            // Right shift operator
+            result = address1 >> 2;
+            Assert.IsTrue(result.Value == 2);
+
+            // Bitwise NOT operator
+            result = ~address1;
+            Assert.IsTrue(result.Value == 18446744073709551605);
+
+            // Decrement operator
+            result = --address1;
+            Assert.IsTrue(result.Value == 9);
+
+            // Increment operator
+            result = ++address1;
+            Assert.IsTrue(result.Value == 10);
+        }
     }
 }

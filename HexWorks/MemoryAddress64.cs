@@ -33,7 +33,12 @@ namespace HexWorks
         {
             _value = (ulong)ptr;
         }
-
+        /// <summary>
+        /// Constructs MemoryAddress from byte array
+        /// </summary>
+        /// <param name="byteArray"> By Default it should be litteendian for 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 => 0xF0DEBC9A78563412 </param>
+        /// <param name="IsLittleEndian">to make it reverse make it false;for 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 => 0x123456789ABCDEF0 </param>
+        /// <exception cref="ArgumentException">Array size must be 8 bytes.</exception>
         public MemoryAddress64(byte[] byteArray,bool IsLittleEndian = true)
         {
             if (byteArray.Length != 8) throw new ArgumentException("byte array size must fit with 64 bit (8 bytes)");
@@ -151,6 +156,36 @@ namespace HexWorks
             return new MemoryAddress64(sum);
         }
 
+        public static MemoryAddress64 operator &(MemoryAddress64 address1, MemoryAddress64 address2)
+        {
+            ulong op = address1._value & address2._value;
+            return new MemoryAddress64(op);
+        }
+        public static MemoryAddress64 operator |(MemoryAddress64 address1, MemoryAddress64 address2)
+        {
+            ulong op = address1._value | address2._value;
+            return new MemoryAddress64(op);
+        }
+        public static MemoryAddress64 operator ^(MemoryAddress64 address1, MemoryAddress64 address2)
+        {
+            ulong op = address1._value ^ address2._value;
+            return new MemoryAddress64(op);
+        }
+        public static MemoryAddress64 operator <<(MemoryAddress64 address1, int shiftamount)
+        {
+            ulong op = address1._value << shiftamount;
+            return new MemoryAddress64(op);
+        }
+        public static MemoryAddress64 operator >>(MemoryAddress64 address1, int shiftamount)
+        {
+            ulong op = address1._value >> shiftamount;
+            return new MemoryAddress64(op);
+        }
+
+        public static MemoryAddress64 operator ~(MemoryAddress64 address1)
+        {
+            return new MemoryAddress64(~address1._value);
+        }
 
         public static MemoryAddress64 operator --(MemoryAddress64 address)
         {

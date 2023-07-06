@@ -161,6 +161,36 @@ namespace HexWorks
             return new MemoryAddress32(sum);
         }
 
+        public static MemoryAddress32 operator &(MemoryAddress32 address1, MemoryAddress32 address2)
+        {
+            UInt32 op = address1._value & address2._value;
+            return new MemoryAddress32(op);
+        }
+        public static MemoryAddress32 operator |(MemoryAddress32 address1, MemoryAddress32 address2)
+        {
+            UInt32 op = address1._value | address2._value;
+            return new MemoryAddress32(op);
+        }
+        public static MemoryAddress32 operator ^(MemoryAddress32 address1, MemoryAddress32 address2)
+        {
+            UInt32 op = address1._value ^ address2._value;
+            return new MemoryAddress32(op);
+        }
+        public static MemoryAddress32 operator <<(MemoryAddress32 address1, int shiftamount)
+        {
+            UInt32 op = address1._value << shiftamount;
+            return new MemoryAddress32(op);
+        }
+        public static MemoryAddress32 operator >>(MemoryAddress32 address1, int shiftamount)
+        {
+            UInt32 op = address1._value >> shiftamount;
+            return new MemoryAddress32(op);
+        }
+
+        public static MemoryAddress32 operator ~(MemoryAddress32 address1)
+        {
+            return new MemoryAddress32(~address1._value);
+        }
 
         public static MemoryAddress32 operator --(MemoryAddress32 address)
         {

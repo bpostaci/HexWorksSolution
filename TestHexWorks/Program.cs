@@ -12,9 +12,6 @@ namespace TestHexWorks
         static void Main(string[] args)
         {
 
-            MemoryAddress32 test = "0x1234";
-            var arr = test.ToByteArray();
-
 
             byte[] validByteArray = new byte[] { 0x12, 0x34 };
             MemoryAddress32 address = new MemoryAddress32(validByteArray,false);
