@@ -218,6 +218,21 @@ namespace UnitTestMemoryAddress
             result = ++address1;
             Assert.IsTrue(result.Value == 10);
         }
+        [TestMethod]
+        public void Test_Numbers()
+        {
+            MemoryAddress32 address1 = -1;
+            Assert.IsTrue(address1.ToHexString(false, true) == "FFFFFFFF");
 
+            MemoryAddress32 address2 = "0xFFFFFFFF";
+            Assert.IsTrue(address2 + 1 == 0);
+
+            MemoryAddress32 address3 = Int32.MinValue;
+            Assert.IsTrue(address3.ToHexString(false, true) == "80000000");
+
+            MemoryAddress32 address4 = Int32.MaxValue;
+            Assert.IsTrue(address4.ToHexString(false, true) == "7FFFFFFF");
+
+        }
     }
 }

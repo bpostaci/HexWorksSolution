@@ -150,6 +150,18 @@ namespace HexWorks
             return new MemoryAddress64(sum);
         }
 
+        public static MemoryAddress64 operator *(MemoryAddress64 address1, MemoryAddress64 address2)
+        {
+            ulong result = address1._value * address2._value; 
+            return new MemoryAddress64(result);
+        }
+        public static MemoryAddress64 operator *(MemoryAddress64 address1, long value)
+        {
+                ulong result = (ulong)( (long) address1._value * value);
+                return new MemoryAddress64(result);
+           
+        }
+
         public static MemoryAddress64 operator &(MemoryAddress64 address1, MemoryAddress64 address2)
         {
             ulong op = address1._value & address2._value;
@@ -322,7 +334,7 @@ namespace HexWorks
 
         public MemoryAddress64 XNOR(MemoryAddress64 address)
         {
-            return new MemoryAddress64( ~(_value ^address._value));
+            return new MemoryAddress64( ~(_value ^ address._value));
         }
 
         
@@ -333,6 +345,47 @@ namespace HexWorks
 
 
         #endregion
+
+        public long ToLong()
+        {
+            return (long)(_value); 
+        }
+
+        public string ToSignedHexString(bool includePrefix, bool trim =true)
+        {
+            long raw = (long)_value;
+            string _prefix = "";
+            if (includePrefix) _prefix = "0x";
+            string result = "";
+
+            if (raw >= 0 )
+            {
+                
+                if(trim)
+                {
+                    result = raw.ToString("X");
+                }
+                else
+                {
+                    result = raw.ToString("X16");
+                }
+                return "+" + _prefix + result; 
+            }
+            else
+            {
+                raw = raw * -1;
+                if (trim)
+                {
+                    result = raw.ToString("X");
+                }
+                else
+                {
+                    result = raw.ToString("X16");
+                }
+                return "-" + _prefix + result; 
+            }
+            
+        }
 
         public string ToHexString()
         {

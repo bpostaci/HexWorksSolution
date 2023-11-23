@@ -8,7 +8,7 @@ namespace UnitTestMemoryAddress
     public class UnitTest1
     {
         [TestMethod]
-        
+
         public void TestMethod1()
         {
             MemoryAddress64 address1 = "ffffb281e6565840";
@@ -25,7 +25,7 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(address3 == address1);
 
             Assert.IsTrue(address1.ToHexString() == "ffffb281e6565840");
-            Assert.IsTrue(address1.ToHexString(true,false) == "0xffffb281e6565840");
+            Assert.IsTrue(address1.ToHexString(true, false) == "0xffffb281e6565840");
 
         }
 
@@ -48,9 +48,9 @@ namespace UnitTestMemoryAddress
         {
             MemoryAddress64 address1 = 345;
             MemoryAddress64 address2 = "345";
-            MemoryAddress64 address3 = 0x345; 
+            MemoryAddress64 address3 = 0x345;
 
-            Assert.IsTrue(address1 != address2); 
+            Assert.IsTrue(address1 != address2);
             Assert.IsTrue(address2 == address3);
         }
 
@@ -65,7 +65,7 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(address2 + 1L == 0);
 
             MemoryAddress64 address3 = Int64.MinValue;
-            Assert.IsTrue(address3.ToHexString(false, true) == "8000000000000000"); 
+            Assert.IsTrue(address3.ToHexString(false, true) == "8000000000000000");
 
             MemoryAddress64 address4 = Int64.MaxValue;
             Assert.IsTrue(address4.ToHexString(false, true) == "7FFFFFFFFFFFFFFF");
@@ -73,10 +73,10 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
-        
+
         public void Test_not_a_hex_string_initialization()
         {
-         
+
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 MemoryAddress64 p = new MemoryAddress64("abg");
@@ -104,7 +104,7 @@ namespace UnitTestMemoryAddress
             var low = a1.LowBytes();
 
             Assert.IsTrue(high == 0xffeeccbb);
-            Assert.IsTrue(low  == 0x11223344);
+            Assert.IsTrue(low == 0x11223344);
 
         }
 
@@ -163,7 +163,20 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(res3 == 0x100ff);
 
             var res4 = a1 - 0x100;
-            Assert.IsTrue(res4 == 0xfeff); 
+            Assert.IsTrue(res4 == 0xfeff);
+
+            var res5 = a2 - a1;
+
+
+        }
+
+        [TestMethod]
+        public void Test_Multiply()
+        {
+            MemoryAddress64 a1 = "0xffffffffffffffff";
+            MemoryAddress64 a2 = "0xffff";
+
+            var result = a1 * a2;   
 
         }
 

@@ -147,7 +147,26 @@ namespace HexWorks
             uint result = (_value & clearMask) | setMask;
             return new MemoryAddress32(result);   
         }
-        #endregion 
+
+        public MemoryAddress32 NAND(MemoryAddress32 address)
+        {
+            uint result = ~(_value & address._value);
+            return new MemoryAddress32(result);
+        }
+
+        public MemoryAddress32 XNOR(MemoryAddress32 address)
+        {
+            return new MemoryAddress32(~(_value ^ address._value));
+        }
+
+
+        public MemoryAddress32 NOR(MemoryAddress32 address)
+        {
+            return new MemoryAddress32(~(_value | address._value));
+        }
+
+
+        #endregion
 
         #region EQUALITY
         public override bool Equals(object obj)
@@ -210,6 +229,21 @@ namespace HexWorks
             UInt32 sum = address1._value - value;
             return new MemoryAddress32(sum);
         }
+
+        public static MemoryAddress32 operator *(MemoryAddress32 address1, MemoryAddress32 address2)
+        {
+            uint result = address1._value * address2._value;
+            return new MemoryAddress32(result);
+        }
+        public static MemoryAddress32 operator *(MemoryAddress32 address1, int value)
+        {
+            checked
+            {
+                uint result = (uint)((int)address1._value * value);
+                return new MemoryAddress32(result);
+            }
+        }
+
 
         public static MemoryAddress32 operator &(MemoryAddress32 address1, MemoryAddress32 address2)
         {
