@@ -38,6 +38,10 @@ namespace ExampleUsage
             MemoryAddress p2 = "0xFFAAEEEE99887766";
             MemoryAddress p3 = "FFAAEEEE`99887766";
 
+            MemoryAddress a1 = 840; -> Decimal
+            MemoryAddress a2 = "840"; -> Hexedecimal
+            
+
             if (p1 == p3) Console.WriteLine("yes they are equal");
             */
 
@@ -54,8 +58,13 @@ namespace ExampleUsage
             Console.WriteLine($"Only Capital      :{address1.ToHexString(false, true)} ");
             Console.WriteLine($"Bits              :{address1.ToBits()} ");
             Console.WriteLine($"Bits Formated     :{Hex.FormatWithSeperator(address1.ToBits(), ".", 8)} ");
+            Console.WriteLine($"Bits Formated2    :{address1.ToBits(8, ".")}");
             Console.WriteLine($"High Bytes        :{address1.HighBytes().ToHexString()}");
             Console.WriteLine($"Low  Bytes        :{address1.LowBytes().ToHexString()}");
+          
+
+             
+
         }
     }
 }

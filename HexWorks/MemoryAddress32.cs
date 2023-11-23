@@ -1,4 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+// Alias: bpostaci
+// Date : 22/11/2023
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,14 +14,15 @@ using System.Threading.Tasks;
 namespace HexWorks
 {
 
-
     /// <summary>
     /// MemoryAddress32 is an immutable value object thats stores memory address for 32 bit.
     /// </summary>
     public class MemoryAddress32
     {
         private readonly UInt32 _value;
+        public UInt32 Value => _value;
 
+        #region CONSTRUCTORS
         public MemoryAddress32(UInt32 value)
         {
             _value = value;
@@ -73,9 +81,9 @@ namespace HexWorks
 
             _value = Convert.ToUInt32(hexString, 16);
         }
+        #endregion
 
-        public UInt32 Value => _value;
-
+        #region BITWISE OPERATIONS
         public MemoryAddress32 HighBytes()
         {
             var q = _value >> 16;
@@ -101,8 +109,47 @@ namespace HexWorks
             return new MemoryAddress32(c);
 
         }
+        /// <summary>
+        /// Toggles a single bit for given index 
+        /// </summary>
+        /// <param name="bitIndex"> Should between 0-31 </param>
+        /// <returns></returns>
+        public MemoryAddress32 ToggleBit(int bitIndex)
+        {
+            if (bitIndex < 0 || bitIndex >= 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitIndex), "Bit position must be between 0 and 31 (inclusive).");
+            }
 
+            uint bitmask = (uint)1 << bitIndex; 
+            return new MemoryAddress32(_value ^ bitmask);
+        }
 
+        public int GetBit(int bitPosition)
+        {
+            if (bitPosition < 0 || bitPosition >= 32 )
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitPosition), "Bit position must be between 0 and 31 (inclusive).");
+            }
+
+            uint mask = (uint)1 << bitPosition;
+            return (_value & mask) == 0 ? 0 : 1;
+        }
+        public MemoryAddress32 SetBit(int bitPosition, int newBitValue)
+        {
+            if (bitPosition < 0 || bitPosition >= 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitPosition), "Bit position must be between 0 and 31 (inclusive).");
+            }
+
+            uint clearMask = ~( (uint)1 << bitPosition);
+            uint setMask = (uint)newBitValue << bitPosition;
+            uint result = (_value & clearMask) | setMask;
+            return new MemoryAddress32(result);   
+        }
+        #endregion 
+
+        #region EQUALITY
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -124,6 +171,9 @@ namespace HexWorks
             return _value.GetHashCode();
         }
 
+        #endregion
+
+        #region OPERATOR OVERLOADS
         public static bool operator ==(MemoryAddress32 address1, MemoryAddress32 address2)
         {
             if (ReferenceEquals(address1, address2))
@@ -228,6 +278,8 @@ namespace HexWorks
             return new MemoryAddress32((UInt32)value);
         }
 
+        #endregion 
+
         public string ToHexString()
         {
             return ToHexString(false, false);
@@ -241,6 +293,13 @@ namespace HexWorks
         {
             int v = (int)_value;
             return Convert.ToString(v, toBase: 2).PadLeft(32,'0');
+        }
+        public string ToBits(int SeparateByBitCount,string seperator )
+        {
+            int v = (int)_value;
+            string result = Convert.ToString(v, toBase: 2).PadLeft(32, '0');
+
+            return Hex.FormatWithSeperator(result, seperator, SeparateByBitCount);
         }
 
         public byte[] ToByteArray()

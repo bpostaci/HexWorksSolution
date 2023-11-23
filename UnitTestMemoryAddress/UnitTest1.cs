@@ -44,6 +44,35 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
+        public void Test_String_vs_Number()
+        {
+            MemoryAddress64 address1 = 345;
+            MemoryAddress64 address2 = "345";
+            MemoryAddress64 address3 = 0x345; 
+
+            Assert.IsTrue(address1 != address2); 
+            Assert.IsTrue(address2 == address3);
+        }
+
+
+        [TestMethod]
+        public void Test_Numbers()
+        {
+            MemoryAddress64 address1 = -1L;
+            Assert.IsTrue(address1.ToHexString(false, true) == "FFFFFFFFFFFFFFFF");
+
+            MemoryAddress64 address2 = "0xFFFFFFFFFFFFFFFF";
+            Assert.IsTrue(address2 + 1L == 0);
+
+            MemoryAddress64 address3 = Int64.MinValue;
+            Assert.IsTrue(address3.ToHexString(false, true) == "8000000000000000"); 
+
+            MemoryAddress64 address4 = Int64.MaxValue;
+            Assert.IsTrue(address4.ToHexString(false, true) == "7FFFFFFFFFFFFFFF");
+
+        }
+
+        [TestMethod]
         
         public void Test_not_a_hex_string_initialization()
         {
@@ -143,6 +172,7 @@ namespace UnitTestMemoryAddress
         {
             MemoryAddress64 address1 = new MemoryAddress64(10);
             MemoryAddress64 address2 = new MemoryAddress64(5);
+            
             UInt32 value = 2;
 
             MemoryAddress64 result;

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+// Alias: bpostaci
+// Date : 22/11/2023
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +19,9 @@ namespace HexWorks
     public class MemoryAddress64 : IEquatable<MemoryAddress64>
     {
         private readonly ulong _value;
+        public ulong Value => _value;
 
+        #region CONSTRUCTORS
         public MemoryAddress64(ulong value)
         {
             _value = value;
@@ -46,6 +54,11 @@ namespace HexWorks
             _value =  (ulong) BitConverter.ToInt64(byteArray, 0);
         }
 
+        /// <summary>
+        /// Constructs MemoryAddress object from hex string
+        /// </summary>
+        /// <param name="hexString">Hex data as string exp. "0x42" or "42" </param>
+        /// <exception cref="ArgumentException"></exception>
         public MemoryAddress64(string hexString)
         {
 
@@ -69,33 +82,9 @@ namespace HexWorks
             _value = Convert.ToUInt64(hexString, 16);
         }
 
-        public ulong Value => _value;
+        #endregion
 
-        public MemoryAddress64 HighBytes()
-        {
-            var q = _value >> 32;
-            MemoryAddress64 x = new MemoryAddress64(q);
-            return x; 
-        }
-
-        public MemoryAddress64 LowBytes()
-        {
-            var q = (_value << 32) >> 32;
-            MemoryAddress64 x = new MemoryAddress64(q);
-            return x;
-
-        }
-
-        public MemoryAddress64 ClearEndBits( int numBits)
-        {
-            if (numBits > 64)
-                throw new ArgumentException("Can not be bigger than 64 bit");
-
-            
-            var c = ( _value >> numBits) << numBits;
-            return new MemoryAddress64(c); 
-
-        }
+        #region EQUALITY
 
 
         public override bool Equals(object obj)
@@ -118,6 +107,11 @@ namespace HexWorks
         {
             return _value.GetHashCode();
         }
+
+        #endregion
+
+        #region OPERATOR OVERLOADS
+
 
         public static bool operator ==(MemoryAddress64 address1, MemoryAddress64 address2)
         {
@@ -232,12 +226,124 @@ namespace HexWorks
             return new MemoryAddress64((ulong)value);
         }
 
+        #endregion
 
+        #region BITWISE OPERATIONS
+        /// <summary>
+        /// Toggles a single bit for given index 
+        /// </summary>
+        /// <param name="bitPosition"> Bit position must be between 0 and 63 (inclusive).</param>
+        /// <returns> returns a new MemoryAddress64 object </returns>
+        public MemoryAddress64 ToggleBit(int bitPosition)
+        {
+            if (bitPosition < 0 || bitPosition >= 64)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitPosition), "Bit position must be between 0 and 63 (inclusive).");
+            }
+
+            ulong bitmask = (ulong)1 << bitPosition;
+            return new MemoryAddress64(_value ^ bitmask); 
+        }
+
+        /// <summary>
+        /// Get the Bit of given Index 
+        /// </summary>
+        /// <param name="bitPosition">"Bit position must be between 0 and 63 (inclusive).</param>
+        /// <returns>an integer which 1 or 0 </returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public int GetBit(int bitPosition)
+        {
+            if (bitPosition < 0 || bitPosition >= 64)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitPosition), "Bit position must be between 0 and 63 (inclusive).");
+            }
+
+            ulong mask = 1UL << bitPosition;
+            return (_value & mask) == 0 ? 0 : 1;
+        }
+
+        public MemoryAddress64 SetBit(int bitPosition, int newBitValue)
+        {
+            if (bitPosition < 0 || bitPosition >= 64)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitPosition), "Bit position must be between 0 and 63 (inclusive).");
+            }
+
+            ulong clearMask = ~(1UL << bitPosition);
+            ulong setMask = (ulong)newBitValue << bitPosition;
+            ulong result = (_value & clearMask) | setMask;
+            return new MemoryAddress64(result);
+        }
+
+        /// <summary>
+        /// Returns a new MemoryAddress64 for high 32 bits .
+        /// </summary>
+        /// <returns>returns a new MemoryAddress64 object </returns>
+        public MemoryAddress64 HighBytes()
+        {
+            var q = _value >> 32;
+            MemoryAddress64 x = new MemoryAddress64(q);
+            return x;
+        }
+
+        /// <summary>
+        /// Returns a new MemoryAddress64 for low 32 bits .
+        /// </summary>
+        /// <returns> returns a new MemoryAddress64 object</returns>
+        public MemoryAddress64 LowBytes()
+        {
+            var q = (_value << 32) >> 32;
+            MemoryAddress64 x = new MemoryAddress64(q);
+            return x;
+
+        }
+        /// <summary>
+        /// Clears the given number of the bits from begining low end-side. 
+        /// </summary>
+        /// <param name="numBits">Number of bits to clear </param>
+        /// <returns> returns a new MemoryAddress64 object </returns>
+        /// <exception cref="ArgumentException"></exception>
+        public MemoryAddress64 ClearEndBits(int numBits)
+        {
+            if (numBits > 64)
+                throw new ArgumentException("Can not be bigger than 64 bit");
+
+
+            var c = (_value >> numBits) << numBits;
+            return new MemoryAddress64(c);
+
+        }
+
+        public MemoryAddress64 NAND(MemoryAddress64 address)
+        {
+            ulong result = ~(_value & address._value);
+            return new MemoryAddress64(result); 
+        }
+
+        public MemoryAddress64 XNOR(MemoryAddress64 address)
+        {
+            return new MemoryAddress64( ~(_value ^address._value));
+        }
+
+        
+        public MemoryAddress64 NOR(MemoryAddress64 address)
+        {
+            return new MemoryAddress64(~(_value | address._value));
+        }
+
+
+        #endregion
 
         public string ToHexString()
         {
             return ToHexString(false, false); 
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="includePrefix"> it will add "0x" at the beginning </param>
+        /// <param name="isCapitalLetters"> makes it capital letters </param>
+        /// <returns></returns>
         public string ToHexString(bool includePrefix,bool isCapitalLetters = false)
         {
             return ToString(includePrefix, isCapitalLetters); 
@@ -247,6 +353,13 @@ namespace HexWorks
         {
             long v = (long)_value; 
             return Convert.ToString(v, toBase: 2).PadLeft(64, '0'); 
+        }
+        public string ToBits(int SeparateByBitCount, string seperator)
+        {
+            long v = (long)_value;
+            string result = Convert.ToString(v, toBase: 2).PadLeft(64, '0');
+
+            return Hex.FormatWithSeperator(result, seperator, SeparateByBitCount);
         }
 
         public byte[] ToByteArray()

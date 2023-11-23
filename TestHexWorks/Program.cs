@@ -12,11 +12,13 @@ namespace TestHexWorks
         static void Main(string[] args)
         {
 
+  
 
-            byte[] validByteArray = new byte[] { 0x12, 0x34 };
+
+            byte[] validByteArray = new byte[] { 0x12, 0x34,0x56,0x78 };
             MemoryAddress32 address = new MemoryAddress32(validByteArray,false);
             Console.WriteLine( address.ToHexString());
-            byte[] validByteArray2 = new byte[] { 0x12, 0x34, };
+            byte[] validByteArray2 = new byte[] { 0x12, 0x34, 0x56, 0x78 };
             MemoryAddress32 a2 = new MemoryAddress32(validByteArray2);
             Console.WriteLine(a2.ToHexString());
 
@@ -37,13 +39,19 @@ namespace TestHexWorks
             Console.WriteLine($"Only Capital      :{address1.ToHexString(false, true)} ");
             Console.WriteLine($"Bits              :{address1.ToBits()} ");
             Console.WriteLine($"Bits Formated     :{Hex.FormatWithSeperator(address1.ToBits(),".",8)} ");
+            Console.WriteLine($"Bits Formated2    :{address1.ToBits(8,"-")}");
 
+
+            var t = address1.ToggleBit(15);
+            Console.WriteLine($"Bits Formated2    :{t.ToBits(8, "-")}");
             /*OUTPUT: 
              * Prefix            :0xffffba88921845a0
                Prefix+Capital    :0xFFFFBA88921845A0
                Plain             :ffffba88921845a0
                Only Capital      :FFFFBA88921845A0
              */
+            address1.ToHexString()
+            
 
             Console.WriteLine("TEST 32 BIT");
 
@@ -54,6 +62,7 @@ namespace TestHexWorks
             Console.WriteLine($"Only Capital      :{address2.ToHexString(false, true)} ");
             Console.WriteLine($"Bits              :{address2.ToBits()} ");
             Console.WriteLine($"Bits Formated     :{Hex.FormatWithSeperator(address2.ToBits(), ".", 8)} ");
+            Console.WriteLine($"Bits Formated2    :{address2.ToBits(8, "-")}");
 
             Console.ReadLine(); 
 
