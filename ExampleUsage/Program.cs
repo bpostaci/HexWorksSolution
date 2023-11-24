@@ -28,9 +28,6 @@ namespace ExampleUsage
             Console.WriteLine("This project has generating to expose features of MemoryAddress object.");
             Console.WriteLine();
 
-            /* ALLOCATE AN ADDRESS THAT WE USE */
-            Process proc = Process.GetCurrentProcess();
-            IntPtr startOffset = proc.MainModule.BaseAddress;
 
 
             /*Example Of Assignments*/
@@ -41,15 +38,57 @@ namespace ExampleUsage
 
             MemoryAddress a1 = 840;   //-> Decimal Assingment
             MemoryAddress a2 = "840"; // -> Hexedecimal Assignment
-            if(a1 != a2 ) Console.WriteLine($"{a1.ToHexString()} not equals {a2.ToHexString() }");
+            if (a1 != a2) Console.WriteLine($"{a1.ToHexString()} not equals {a2.ToHexString()}");
+            /* OUTPUT 
+             0000000000000348 not equals 0000000000000840
+            */
 
             //Array Assignment (Must be 8 byte for MemoryAddress64) 
             MemoryAddress arr1 = new MemoryAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 });
+            PrintAddress(arr1);
 
+            /* OUTPUT
+                Prefix            :0xf0debcab78563412
+                Prefix+Capital    :0xF0DEBCAB78563412
+                Plain             :f0debcab78563412
+                Only Capital      :F0DEBCAB78563412
+                Signed Hex        :-0xF21435487A9CBEE
+                Signed Hex(notrim):-0x0F21435487A9CBEE
+                Bits              :1111000011011110101111001010101101111000010101100011010000010010
+                Bits Formated     :11110000.11011110.10111100.10101011.01111000.01010110.00110100.00010010
+                Bits Formated2    :11110000-11011110-10111100-10101011-01111000-01010110-00110100-00010010
+                High Bytes        :00000000f0debcab
+                Low  Bytes        :0000000078563412
+             */
+
+
+            MemoryAddress arr2 = new MemoryAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 },false );
+            PrintAddress(arr2);
+
+             /* OUTPUT
+                Prefix            :0x12345678abbcdef0
+                Prefix+Capital    :0x12345678ABBCDEF0
+                Plain             :12345678abbcdef0
+                Only Capital      :12345678ABBCDEF0
+                Signed Hex        :+0x12345678ABBCDEF0
+                Signed Hex(notrim):+0x12345678ABBCDEF0
+                Bits              :0001001000110100010101100111100010101011101111001101111011110000
+                Bits Formated     :00010010.00110100.01010110.01111000.10101011.10111100.11011110.11110000
+                Bits Formated2    :00010010-00110100-01010110-01111000-10101011-10111100-11011110-11110000
+                High Bytes        :0000000012345678
+                Low  Bytes        :00000000abbcdef0 
+
+                */
+
+
+            /* ALLOCATE AN ADDRESS THAT WE USE */
+            Process proc = Process.GetCurrentProcess();
+            IntPtr startOffset = proc.MainModule.BaseAddress;
 
             /* Example Of Offseting */
             MemoryAddress address1 = startOffset;
             PrintAddress(address1);
+
             MemoryAddress offset = 0x1000;
             var nextAddress = address1 + offset;
             PrintAddress(nextAddress);
@@ -58,6 +97,10 @@ namespace ExampleUsage
             for (int i = 0; i < 4; i++)
             {
                 nextAddress = address1 + (offset * (i * -8));
+                //OR
+                nextAddress = address1.Offset((i * -8) * 0x1000); 
+
+
                 Console.WriteLine($"Offset { (offset * (i * -8)).ToSignedHexString(true,false) } => { nextAddress.ToHexString()}");
             }
             /*
@@ -75,6 +118,7 @@ namespace ExampleUsage
 
              */
 
+        
 
             /* BITWISE OPERATINS */
 
@@ -141,7 +185,7 @@ namespace ExampleUsage
             Console.WriteLine("FLAG: " + flag.ToBits(8, "-"));
             
             
-            flag = flag.ClearEndBits(4);
+            flag = flag.GetBaseAddress(4);
             Console.WriteLine("FLAG: " + flag.ToBits(8, "-"));
             /*
                FLAG: 00000000-00000000-00000000-00000000-11111111-11111111-11111111-11111111
@@ -149,7 +193,7 @@ namespace ExampleUsage
              */
 
 
-
+            Console.WriteLine("End of Demo"); 
             Console.ReadLine(); 
         }
 
@@ -169,15 +213,19 @@ namespace ExampleUsage
             Console.WriteLine($"Low  Bytes        :{address1.LowBytes().ToHexString()}");
 
             /* OUTPUT
-                Prefix            :0x0000026c28af1000
-                Prefix + Capital  :0x0000026C28AF1000
-                Plain             :0000026c28af1000
-                Only Capital      :0000026C28AF1000
-                Bits              :0000000000000000000000100110110000101000101011110001000000000000
-                Bits Formated     :00000000.00000000.00000010.01101100.00101000.10101111.00010000.00000000
-                Bits Formated2    :00000000-00000000-00000010-01101100-00101000-10101111-00010000-00000000
-                High Bytes        :000000000000026c
-                Low  Bytes        :0000000028af1000
+             
+                Prefix            :0x12345678abbcdef0
+                Prefix+Capital    :0x12345678ABBCDEF0
+                Plain             :12345678abbcdef0
+                Only Capital      :12345678ABBCDEF0
+                Signed Hex        :+0x12345678ABBCDEF0
+                Signed Hex(notrim):+0x12345678ABBCDEF0
+                Bits              :0001001000110100010101100111100010101011101111001101111011110000
+                Bits Formated     :00010010.00110100.01010110.01111000.10101011.10111100.11011110.11110000
+                Bits Formated2    :00010010-00110100-01010110-01111000-10101011-10111100-11011110-11110000
+                High Bytes        :0000000012345678
+                Low  Bytes        :00000000abbcdef0 
+
             */
         }
     }

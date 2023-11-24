@@ -315,16 +315,37 @@ namespace HexWorks
         /// <param name="numBits">Number of bits to clear </param>
         /// <returns> returns a new MemoryAddress64 object </returns>
         /// <exception cref="ArgumentException"></exception>
-        public MemoryAddress64 ClearEndBits(int numBits)
+        public MemoryAddress64 GetBaseAddress(int offsetSizeAsBit)
         {
-            if (numBits > 64)
-                throw new ArgumentException("Can not be bigger than 64 bit");
+            if (offsetSizeAsBit < 0 || offsetSizeAsBit >= 64)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offsetSizeAsBit), "Offset size must be between 0 and 63 (inclusive).");
+            }
 
 
-            var c = (_value >> numBits) << numBits;
+            var c = (_value >> offsetSizeAsBit) << offsetSizeAsBit;
             return new MemoryAddress64(c);
 
         }
+
+        public MemoryAddress64 Offset(long offset)
+        {
+            ulong result = _value; 
+            if( offset < 0)
+            {
+                result = result - (ulong)(-1 * offset); 
+            }
+            else
+            {
+                result = result + (ulong)offset; 
+            }
+                
+            return new MemoryAddress64(result); 
+        }
+
+      
+
+
 
         public MemoryAddress64 NAND(MemoryAddress64 address)
         {

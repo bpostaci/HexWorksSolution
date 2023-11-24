@@ -99,13 +99,15 @@ namespace HexWorks
 
         }
 
-        public MemoryAddress32 ClearEndBits(int numBits)
+        public MemoryAddress32 GetBaseAddress(int OffsetSizeAsBits)
         {
-            if (numBits > 32)
-                throw new ArgumentException("Can not be bigger than 64 bit");
+            if (OffsetSizeAsBits < 0 || OffsetSizeAsBits >= 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(OffsetSizeAsBits), "Offset size must be between 0 and 31 (inclusive).");
+            }
 
 
-            var c = (_value >> numBits) << numBits;
+            var c = (_value >> OffsetSizeAsBits) << OffsetSizeAsBits;
             return new MemoryAddress32(c);
 
         }
@@ -146,6 +148,21 @@ namespace HexWorks
             uint setMask = (uint)newBitValue << bitPosition;
             uint result = (_value & clearMask) | setMask;
             return new MemoryAddress32(result);   
+        }
+
+        public MemoryAddress32 Offset(int offset)
+        {
+            uint result = _value;
+            if (offset < 0)
+            {
+                result = result - (uint)(-1 * offset);
+            }
+            else
+            {
+                result = result + (uint)offset;
+            }
+
+            return new MemoryAddress32(result);
         }
 
         public MemoryAddress32 NAND(MemoryAddress32 address)
