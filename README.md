@@ -1,7 +1,16 @@
-# Hex value object implementation
+# Hex data value object implementation
 
--  Contians 2 MemoryAddress class for 64 bit use Hex64 and for 32bit use Hex32 class
--  Use for cross compile: "Conditional compilation symbols" X64
+-  Contians 2 Hex data class for 64 bit use Hex64 and for 32bit use Hex32 class
+-  Get rid off primitive obsession for using "ulong" or "uint" for hex data types.
+-  Useful for debugger extensions, hex editors.
+
+Features: 
+  
+- Supports Arithmetic, Logic, and Bitwise Operations.
+- Supports Offseting.
+- Supports Display Options.
+- Immutable Type.
+
 
 ````
 Example:
