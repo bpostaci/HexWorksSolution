@@ -3,7 +3,7 @@
 
 // Alias: bpostaci
 // Date : 22/11/2023
-
+// Ver  : 1.1
 
 using System;
 using System.Collections.Generic;
@@ -15,29 +15,76 @@ namespace HexWorks
 {
 
     /// <summary>
-    /// MemoryAddress32 is an immutable value object thats stores memory address for 32 bit.
+    /// Hex32 is an immutable value object thats stores memory address for 32 bit.
     /// </summary>
-    public class MemoryAddress32
+    public class Hex32
     {
         private readonly UInt32 _value;
         public UInt32 Value => _value;
 
+        public static Hex32 FromHexString(string hexString)
+        {
+            hexString = hexString.Replace("`", "");
+            if (hexString.StartsWith("0x"))
+            {
+                hexString = hexString.Substring(2);
+            }
+
+            if (!Hex.IsHexadecimal(hexString))
+            {
+                throw new ArgumentException("Input string is not a hex string");
+            }
+
+            if (hexString.Length > 8)
+            {
+                throw new ArgumentException("Hex string size is bigger than 64bit");
+            }
+            uint result = Convert.ToUInt32(hexString, 16);
+            return new Hex32(result);
+        }
+
+        public static Hex32 FromBinaryString(string binaryString)
+        {
+            const int MaxBinaryLength = 32; 
+            const int MinBinaryLength = 1;
+
+
+            if (!IsValidBinaryString(binaryString))
+                throw new ArgumentException("Input string is not a valid binary string. Example: \"1010b\"");
+
+
+            int length = binaryString.Length;
+            if (length > MaxBinaryLength + 1 || length < MinBinaryLength)
+                throw new ArgumentException($"Input string length should be between {MinBinaryLength} and {MaxBinaryLength + 1}");
+
+
+            string raw = binaryString.TrimEnd('b');
+            uint result = Hex.ConvertBinaryToUInt32(raw);
+            return new Hex32(result);
+        }
+
+        private static bool IsValidBinaryString(string binaryString)
+        {
+            return binaryString.Length >= 2 && binaryString.EndsWith("b") && binaryString.Substring(0, binaryString.Length - 1).All(c => c == '0' || c == '1');
+        }
+
+
         #region CONSTRUCTORS
-        public MemoryAddress32(UInt32 value)
+        public Hex32(UInt32 value)
         {
             _value = value;
         }
 
-        public MemoryAddress32(int value)
+        public Hex32(int value)
         {
             _value = (UInt32)value;
         }
 
-        public MemoryAddress32(IntPtr ptr)
+        public Hex32(IntPtr ptr)
         {
             _value = (UInt32)ptr;
         }
-        public MemoryAddress32(UIntPtr ptr)
+        public Hex32(UIntPtr ptr)
         {
             _value = (UInt32)ptr;
         }
@@ -47,7 +94,7 @@ namespace HexWorks
         /// <param name="byteArray"> Default Should be little endian 0x12345678 => { 0x78, 0x56, 0x34, 0x12 } </param>
         /// <param name="IsLitteEndian">To change it make it false 0x12345678 => { 0x12 0x34 0x56 0x78 } </param>
         /// <exception cref="ArgumentException"></exception>
-        public MemoryAddress32(byte[] byteArray,bool IsLitteEndian =true)
+        public Hex32(byte[] byteArray,bool IsLitteEndian =true)
         {
             if (byteArray.Length != 4) throw new ArgumentException("byte array size must fit with 32 bit (4 bytes)"); 
             
@@ -59,7 +106,7 @@ namespace HexWorks
             _value = (UInt32)BitConverter.ToUInt32(byteArray, 0);
         }
 
-        public MemoryAddress32(string hexString)
+        public Hex32(string hexString)
         {
 
             hexString = hexString.Replace("`", "");
@@ -84,22 +131,22 @@ namespace HexWorks
         #endregion
 
         #region BITWISE OPERATIONS
-        public MemoryAddress32 HighBytes()
+        public Hex32 HighBytes()
         {
             var q = _value >> 16;
-            MemoryAddress32 x = new MemoryAddress32(q);
+            Hex32 x = new Hex32(q);
             return x;
         }
 
-        public MemoryAddress32 LowBytes()
+        public Hex32 LowBytes()
         {
             var q = (_value << 16) >> 16;
-            MemoryAddress32 x = new MemoryAddress32(q);
+            Hex32 x = new Hex32(q);
             return x;
 
         }
 
-        public MemoryAddress32 GetBaseAddress(int OffsetSizeAsBits)
+        public Hex32 GetBaseAddress(int OffsetSizeAsBits)
         {
             if (OffsetSizeAsBits < 0 || OffsetSizeAsBits >= 32)
             {
@@ -108,7 +155,7 @@ namespace HexWorks
 
 
             var c = (_value >> OffsetSizeAsBits) << OffsetSizeAsBits;
-            return new MemoryAddress32(c);
+            return new Hex32(c);
 
         }
         /// <summary>
@@ -116,7 +163,7 @@ namespace HexWorks
         /// </summary>
         /// <param name="bitIndex"> Should between 0-31 </param>
         /// <returns></returns>
-        public MemoryAddress32 ToggleBit(int bitIndex)
+        public Hex32 ToggleBit(int bitIndex)
         {
             if (bitIndex < 0 || bitIndex >= 32)
             {
@@ -124,7 +171,7 @@ namespace HexWorks
             }
 
             uint bitmask = (uint)1 << bitIndex; 
-            return new MemoryAddress32(_value ^ bitmask);
+            return new Hex32(_value ^ bitmask);
         }
 
         public int GetBit(int bitPosition)
@@ -137,7 +184,7 @@ namespace HexWorks
             uint mask = (uint)1 << bitPosition;
             return (_value & mask) == 0 ? 0 : 1;
         }
-        public MemoryAddress32 SetBit(int bitPosition, int newBitValue)
+        public Hex32 SetBit(int bitPosition, int newBitValue)
         {
             if (bitPosition < 0 || bitPosition >= 32)
             {
@@ -147,10 +194,10 @@ namespace HexWorks
             uint clearMask = ~( (uint)1 << bitPosition);
             uint setMask = (uint)newBitValue << bitPosition;
             uint result = (_value & clearMask) | setMask;
-            return new MemoryAddress32(result);   
+            return new Hex32(result);   
         }
 
-        public MemoryAddress32 Offset(int offset)
+        public Hex32 Offset(int offset)
         {
             uint result = _value;
             if (offset < 0)
@@ -162,26 +209,33 @@ namespace HexWorks
                 result = result + (uint)offset;
             }
 
-            return new MemoryAddress32(result);
+            return new Hex32(result);
         }
 
-        public MemoryAddress32 NAND(MemoryAddress32 address)
+        public Hex32 NAND(Hex32 address)
         {
             uint result = ~(_value & address._value);
-            return new MemoryAddress32(result);
+            return new Hex32(result);
         }
 
-        public MemoryAddress32 XNOR(MemoryAddress32 address)
+        public Hex32 XNOR(Hex32 address)
         {
-            return new MemoryAddress32(~(_value ^ address._value));
+            return new Hex32(~(_value ^ address._value));
         }
 
 
-        public MemoryAddress32 NOR(MemoryAddress32 address)
+        public Hex32 NOR(Hex32 address)
         {
-            return new MemoryAddress32(~(_value | address._value));
+            return new Hex32(~(_value | address._value));
         }
 
+        public bool TestBit(uint data)
+        {
+            if ((this.Value & data) == data)
+                return true;
+            else
+                return false;
+        }
 
         #endregion
 
@@ -191,10 +245,10 @@ namespace HexWorks
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            return Equals((MemoryAddress32)obj);
+            return Equals((Hex32)obj);
         }
 
-        public bool Equals(MemoryAddress32 other)
+        public bool Equals(Hex32 other)
         {
             if (other == null)
                 return false;
@@ -210,7 +264,7 @@ namespace HexWorks
         #endregion
 
         #region OPERATOR OVERLOADS
-        public static bool operator ==(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static bool operator ==(Hex32 address1, Hex32 address2)
         {
             if (ReferenceEquals(address1, address2))
                 return true;
@@ -221,112 +275,112 @@ namespace HexWorks
             return address1.Equals(address2);
         }
 
-        public static bool operator !=(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static bool operator !=(Hex32 address1, Hex32 address2)
         {
             return !(address1 == address2);
         }
 
-        public static MemoryAddress32 operator +(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static Hex32 operator +(Hex32 address1, Hex32 address2)
         {
             UInt32 sum = address1._value + address2._value;
-            return new MemoryAddress32(sum);
+            return new Hex32(sum);
         }
-        public static MemoryAddress32 operator +(MemoryAddress32 address1, UInt32 value)
+        public static Hex32 operator +(Hex32 address1, UInt32 value)
         {
             UInt32 sum = address1._value + value;
-            return new MemoryAddress32(sum);
+            return new Hex32(sum);
         }
-        public static MemoryAddress32 operator -(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static Hex32 operator -(Hex32 address1, Hex32 address2)
         {
             UInt32 sum = address1._value - address2._value;
-            return new MemoryAddress32(sum);
+            return new Hex32(sum);
         }
-        public static MemoryAddress32 operator -(MemoryAddress32 address1, UInt32 value)
+        public static Hex32 operator -(Hex32 address1, UInt32 value)
         {
             UInt32 sum = address1._value - value;
-            return new MemoryAddress32(sum);
+            return new Hex32(sum);
         }
 
-        public static MemoryAddress32 operator *(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static Hex32 operator *(Hex32 address1, Hex32 address2)
         {
             uint result = address1._value * address2._value;
-            return new MemoryAddress32(result);
+            return new Hex32(result);
         }
-        public static MemoryAddress32 operator *(MemoryAddress32 address1, int value)
+        public static Hex32 operator *(Hex32 address1, int value)
         {
             checked
             {
                 uint result = (uint)((int)address1._value * value);
-                return new MemoryAddress32(result);
+                return new Hex32(result);
             }
         }
 
 
-        public static MemoryAddress32 operator &(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static Hex32 operator &(Hex32 address1, Hex32 address2)
         {
             UInt32 op = address1._value & address2._value;
-            return new MemoryAddress32(op);
+            return new Hex32(op);
         }
-        public static MemoryAddress32 operator |(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static Hex32 operator |(Hex32 address1, Hex32 address2)
         {
             UInt32 op = address1._value | address2._value;
-            return new MemoryAddress32(op);
+            return new Hex32(op);
         }
-        public static MemoryAddress32 operator ^(MemoryAddress32 address1, MemoryAddress32 address2)
+        public static Hex32 operator ^(Hex32 address1, Hex32 address2)
         {
             UInt32 op = address1._value ^ address2._value;
-            return new MemoryAddress32(op);
+            return new Hex32(op);
         }
-        public static MemoryAddress32 operator <<(MemoryAddress32 address1, int shiftamount)
+        public static Hex32 operator <<(Hex32 address1, int shiftamount)
         {
             UInt32 op = address1._value << shiftamount;
-            return new MemoryAddress32(op);
+            return new Hex32(op);
         }
-        public static MemoryAddress32 operator >>(MemoryAddress32 address1, int shiftamount)
+        public static Hex32 operator >>(Hex32 address1, int shiftamount)
         {
             UInt32 op = address1._value >> shiftamount;
-            return new MemoryAddress32(op);
+            return new Hex32(op);
         }
 
-        public static MemoryAddress32 operator ~(MemoryAddress32 address1)
+        public static Hex32 operator ~(Hex32 address1)
         {
-            return new MemoryAddress32(~address1._value);
+            return new Hex32(~address1._value);
         }
 
-        public static MemoryAddress32 operator --(MemoryAddress32 address)
+        public static Hex32 operator --(Hex32 address)
         {
             UInt32 decrementedValue = address._value - 1;
-            return new MemoryAddress32(decrementedValue);
+            return new Hex32(decrementedValue);
         }
-        public static MemoryAddress32 operator ++(MemoryAddress32 address)
+        public static Hex32 operator ++(Hex32 address)
         {
             UInt32 decrementedValue = address._value + 1;
-            return new MemoryAddress32(decrementedValue);
+            return new Hex32(decrementedValue);
         }
 
 
-        public static implicit operator MemoryAddress32(string hexString)
+        public static implicit operator Hex32(string hexString)
         {
-            return new MemoryAddress32(hexString);
+            return new Hex32(hexString);
         }
 
-        public static implicit operator MemoryAddress32(UInt32 value)
+        public static implicit operator Hex32(UInt32 value)
         {
-            return new MemoryAddress32(value);
+            return new Hex32(value);
         }
 
-        public static implicit operator MemoryAddress32(int value)
+        public static implicit operator Hex32(int value)
         {
-            return new MemoryAddress32((UInt32)value);
+            return new Hex32((UInt32)value);
         }
 
-        public static implicit operator MemoryAddress32(UIntPtr value)
+        public static implicit operator Hex32(UIntPtr value)
         {
-            return new MemoryAddress32((UInt32)value);
+            return new Hex32((UInt32)value);
         }
-        public static implicit operator MemoryAddress32(IntPtr value)
+        public static implicit operator Hex32(IntPtr value)
         {
-            return new MemoryAddress32((UInt32)value);
+            return new Hex32((UInt32)value);
         }
 
         #endregion 

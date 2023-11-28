@@ -7,12 +7,12 @@ using HexWorks;
 namespace UnitTestMemoryAddress
 {
     /// <summary>
-    /// Summary description for UnitTest_MemoryAddress32
+    /// Summary description for UnitTest_Hex32
     /// </summary>
     [TestClass]
-    public class UnitTest_MemoryAddress32
+    public class UnitTest_Hex32
     {
-        public UnitTest_MemoryAddress32()
+        public UnitTest_Hex32()
         {
             //
             // TODO: Add constructor logic here
@@ -62,46 +62,46 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_Initialization()
         {
-            MemoryAddress32 a1 = 0xFFEE9922;
-            MemoryAddress32 a2 = "0xFFEE9922";
-            MemoryAddress32 offset1 = 0x1;
+            Hex32 a1 = 0xFFEE9922;
+            Hex32 a2 = "0xFFEE9922";
+            Hex32 offset1 = 0x1;
 
 
 
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                MemoryAddress32 a3 = "0xFFEEDDCC00112244";
+                Hex32 a3 = "0xFFEEDDCC00112244";
             });
         }
         [TestMethod]
-        public void MemoryAddress32_ValidInput_ConvertsCorrectly()
+        public void Hex32_ValidInput_ConvertsCorrectly()
         {
             byte[] validByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78 };
-            MemoryAddress32 address = new MemoryAddress32(validByteArray,false);
+            Hex32 address = new Hex32(validByteArray,false);
 
             Assert.IsTrue(0x12345678 == address.Value);
 
             byte[] validByteArray2 = new byte[] { 0x12, 0x34, 0x56, 0x78 };
-            MemoryAddress32 address2 = new MemoryAddress32(validByteArray2, true);
+            Hex32 address2 = new Hex32(validByteArray2, true);
 
             Assert.IsTrue(0x78563412 == address2.Value);
         }
 
         [TestMethod]
-        public void MemoryAddress32_InvalidInput_ThrowsArgumentException()
+        public void Hex32_InvalidInput_ThrowsArgumentException()
         {
             byte[] invalidByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A };
-            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress32(invalidByteArray));
+            Assert.ThrowsException<ArgumentException>(() => new Hex32(invalidByteArray));
 
             byte[] invalidByteArray2 = new byte[] { 0x12, 0x34 };
-            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress32(invalidByteArray2));
+            Assert.ThrowsException<ArgumentException>(() => new Hex32(invalidByteArray2));
 
         }
 
         [TestMethod]
         public void Test_High_Low_bits()
         {
-            MemoryAddress32 a1 = 0xFFEE9922;
+            Hex32 a1 = 0xFFEE9922;
             var high = a1.HighBytes();
             var low = a1.LowBytes();
 
@@ -114,9 +114,9 @@ namespace UnitTestMemoryAddress
 
         public void Test_Reference_Equality()
         {
-            MemoryAddress32 address1 = "ffffb281";
-            MemoryAddress32 address2 = "0xffffb281";
-            MemoryAddress32 address3 = 0xffffb281;
+            Hex32 address1 = "ffffb281";
+            Hex32 address2 = "0xffffb281";
+            Hex32 address3 = 0xffffb281;
 
             Assert.IsTrue(address1 == address2);
             Assert.IsTrue(address2 == address3);
@@ -126,7 +126,7 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_OverFlow()
         {
-            MemoryAddress32 address1 = "ffffffff";
+            Hex32 address1 = "ffffffff";
             var p = address1 + 0x1;
 
             Assert.IsTrue(p == 0x0); 
@@ -136,7 +136,7 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_Underflow()
         {
-            MemoryAddress32 address1 = "0x00000000";
+            Hex32 address1 = "0x00000000";
             var p = address1 - 0x1;
 
             Assert.IsTrue(p == 0xFFFFFFFF);
@@ -146,8 +146,8 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_Sum_Substract()
         {
-            MemoryAddress32 a1 = "0xffff";
-            MemoryAddress32 a2 = "0x1";
+            Hex32 a1 = "0xffff";
+            Hex32 a2 = "0x1";
 
             var result = a1 + a2;
             Assert.IsTrue(result == "0x10000");
@@ -166,11 +166,11 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void OperatorOverloads_Test()
         {
-            MemoryAddress32 address1 = new MemoryAddress32(10);
-            MemoryAddress32 address2 = new MemoryAddress32(5);
+            Hex32 address1 = new Hex32(10);
+            Hex32 address2 = new Hex32(5);
             UInt32 value = 2;
 
-            MemoryAddress32 result;
+            Hex32 result;
 
             // Addition operator
             result = address1 + address2;
@@ -221,16 +221,16 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_Numbers()
         {
-            MemoryAddress32 address1 = -1;
+            Hex32 address1 = -1;
             Assert.IsTrue(address1.ToHexString(false, true) == "FFFFFFFF");
 
-            MemoryAddress32 address2 = "0xFFFFFFFF";
+            Hex32 address2 = "0xFFFFFFFF";
             Assert.IsTrue(address2 + 1 == 0);
 
-            MemoryAddress32 address3 = Int32.MinValue;
+            Hex32 address3 = Int32.MinValue;
             Assert.IsTrue(address3.ToHexString(false, true) == "80000000");
 
-            MemoryAddress32 address4 = Int32.MaxValue;
+            Hex32 address4 = Int32.MaxValue;
             Assert.IsTrue(address4.ToHexString(false, true) == "7FFFFFFF");
 
         }

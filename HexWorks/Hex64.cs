@@ -3,41 +3,92 @@
 
 // Alias: bpostaci
 // Date : 22/11/2023
+// Ver  : 1.1
+
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace HexWorks
 {
     /// <summary>
-    /// MemoryAddress64 is an immutable value object thats stores memory address for 64 bit.
+    /// Hex64 is an immutable value object thats stores memory address for 64 bit.
     /// </summary>
-    public class MemoryAddress64 : IEquatable<MemoryAddress64>
+    public class Hex64 : IEquatable<Hex64>
     {
+
+        public static Hex64 FromHexString(string hexString)
+        {
+            hexString = hexString.Replace("`", "");
+            if (hexString.StartsWith("0x"))
+            {
+                hexString = hexString.Substring(2);
+            }
+
+            if (!Hex.IsHexadecimal(hexString))
+            {
+                throw new ArgumentException("Input string is not a hex string");
+            }
+
+            if (hexString.Length > 16)
+            {
+                throw new ArgumentException("Hex string size is bigger than 64bit");
+            }
+            ulong result = Convert.ToUInt64(hexString, 16);
+            return new Hex64(result);
+        }
+
+        public static Hex64 FromBinaryString(string binaryString)
+        {
+            const int MaxBinaryLength = 64; // Assuming Hex64 is a 64-bit value
+            const int MinBinaryLength = 1;
+
+
+            if (!IsValidBinaryString(binaryString))
+                throw new ArgumentException("Input string is not a valid binary string. Example: \"1010b\"");
+
+
+            int length = binaryString.Length;
+            if (length > MaxBinaryLength + 1 || length < MinBinaryLength)
+                throw new ArgumentException($"Input string length should be between {MinBinaryLength} and {MaxBinaryLength + 1}");
+
+
+            string raw = binaryString.TrimEnd('b'); 
+            ulong result = Hex.ConvertBinaryToUInt64(raw);
+            return new Hex64(result);
+        }
+
+        private static bool IsValidBinaryString(string binaryString)
+        {
+            return binaryString.Length >= 2 && binaryString.EndsWith("b") && binaryString.Substring(0, binaryString.Length - 1).All(c => c == '0' || c == '1');
+        }
+
+
         private readonly ulong _value;
         public ulong Value => _value;
 
         #region CONSTRUCTORS
-        public MemoryAddress64(ulong value)
+        public Hex64(ulong value)
         {
             _value = value;
         }
 
-        public MemoryAddress64(long value)
+        public Hex64(long value)
         {
             _value = (ulong)value;
         }
 
-        public MemoryAddress64(IntPtr ptr)
+        public Hex64(IntPtr ptr)
         {
             _value = (ulong)ptr;
         }
 
-        public MemoryAddress64(UIntPtr ptr)
+        public Hex64(UIntPtr ptr)
         {
             _value = (ulong)ptr;
         }
@@ -47,7 +98,7 @@ namespace HexWorks
         /// <param name="byteArray"> By Default it should be litteendian for 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 => 0xF0DEBC9A78563412 </param>
         /// <param name="IsLittleEndian">to make it reverse make it false;for 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 => 0x123456789ABCDEF0 </param>
         /// <exception cref="ArgumentException">Array size must be 8 bytes.</exception>
-        public MemoryAddress64(byte[] byteArray,bool IsLittleEndian = true)
+        public Hex64(byte[] byteArray,bool IsLittleEndian = true)
         {
             if (byteArray.Length != 8) throw new ArgumentException("byte array size must fit with 64 bit (8 bytes)");
             if(!IsLittleEndian) Array.Reverse(byteArray);   
@@ -59,11 +110,11 @@ namespace HexWorks
         /// </summary>
         /// <param name="hexString">Hex data as string exp. "0x42" or "42" </param>
         /// <exception cref="ArgumentException"></exception>
-        public MemoryAddress64(string hexString)
+        public Hex64(string hexString)
         {
 
             hexString = hexString.Replace("`", "");
-
+            
             if (hexString.StartsWith("0x"))
             {
                 hexString = hexString.Substring(2);
@@ -92,10 +143,10 @@ namespace HexWorks
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            return Equals((MemoryAddress64)obj);
+            return Equals((Hex64)obj);
         }
 
-        public bool Equals(MemoryAddress64 other)
+        public bool Equals(Hex64 other)
         {
             if (other == null)
                 return false;
@@ -113,7 +164,7 @@ namespace HexWorks
         #region OPERATOR OVERLOADS
 
 
-        public static bool operator ==(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static bool operator ==(Hex64 address1, Hex64 address2)
         {
             if (ReferenceEquals(address1, address2))
                 return true;
@@ -124,118 +175,118 @@ namespace HexWorks
             return address1.Equals(address2);
         }
 
-        public static bool operator !=(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static bool operator !=(Hex64 address1, Hex64 address2)
         {
             return !(address1 == address2);
         }
 
-        public static MemoryAddress64 operator +(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static Hex64 operator +(Hex64 address1, Hex64 address2)
         {
             ulong sum = address1._value + address2._value;
-            return new MemoryAddress64(sum);
+            return new Hex64(sum);
         }
-        public static MemoryAddress64 operator +(MemoryAddress64 address1, ulong value)
+        public static Hex64 operator +(Hex64 address1, ulong value)
         {
             ulong sum = address1._value + value;
-            return new MemoryAddress64(sum);
+            return new Hex64(sum);
         }
-        public static MemoryAddress64 operator -(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static Hex64 operator -(Hex64 address1, Hex64 address2)
         {
             ulong sum = address1._value - address2._value;
-            return new MemoryAddress64(sum);
+            return new Hex64(sum);
         }
-        public static MemoryAddress64 operator -(MemoryAddress64 address1, ulong value)
+        public static Hex64 operator -(Hex64 address1, ulong value)
         {
             ulong sum = address1._value - value;
-            return new MemoryAddress64(sum);
+            return new Hex64(sum);
         }
 
-        public static MemoryAddress64 operator *(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static Hex64 operator *(Hex64 address1, Hex64 address2)
         {
             ulong result = address1._value * address2._value; 
-            return new MemoryAddress64(result);
+            return new Hex64(result);
         }
-        public static MemoryAddress64 operator *(MemoryAddress64 address1, long value)
+        public static Hex64 operator *(Hex64 address1, long value)
         {
                 ulong result = (ulong)( (long) address1._value * value);
-                return new MemoryAddress64(result);
+                return new Hex64(result);
            
         }
 
-        public static MemoryAddress64 operator &(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static Hex64 operator &(Hex64 address1, Hex64 address2)
         {
             ulong op = address1._value & address2._value;
-            return new MemoryAddress64(op);
+            return new Hex64(op);
         }
-        public static MemoryAddress64 operator |(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static Hex64 operator |(Hex64 address1, Hex64 address2)
         {
             ulong op = address1._value | address2._value;
-            return new MemoryAddress64(op);
+            return new Hex64(op);
         }
-        public static MemoryAddress64 operator ^(MemoryAddress64 address1, MemoryAddress64 address2)
+        public static Hex64 operator ^(Hex64 address1, Hex64 address2)
         {
             ulong op = address1._value ^ address2._value;
-            return new MemoryAddress64(op);
+            return new Hex64(op);
         }
-        public static MemoryAddress64 operator <<(MemoryAddress64 address1, int shiftamount)
+        public static Hex64 operator <<(Hex64 address1, int shiftamount)
         {
             ulong op = address1._value << shiftamount;
-            return new MemoryAddress64(op);
+            return new Hex64(op);
         }
-        public static MemoryAddress64 operator >>(MemoryAddress64 address1, int shiftamount)
+        public static Hex64 operator >>(Hex64 address1, int shiftamount)
         {
             ulong op = address1._value >> shiftamount;
-            return new MemoryAddress64(op);
+            return new Hex64(op);
         }
 
-        public static MemoryAddress64 operator ~(MemoryAddress64 address1)
+        public static Hex64 operator ~(Hex64 address1)
         {
-            return new MemoryAddress64(~address1._value);
+            return new Hex64(~address1._value);
         }
 
-        public static MemoryAddress64 operator --(MemoryAddress64 address)
+        public static Hex64 operator --(Hex64 address)
         {
             ulong decrementedValue = address._value - 1;
-            return new MemoryAddress64(decrementedValue);
+            return new Hex64(decrementedValue);
         }
-        public static MemoryAddress64 operator ++(MemoryAddress64 address)
+        public static Hex64 operator ++(Hex64 address)
         {
             ulong decrementedValue = address._value +1;
-            return new MemoryAddress64(decrementedValue);
+            return new Hex64(decrementedValue);
         }
 
 
-        public static implicit operator MemoryAddress64(string hexString)
+        public static implicit operator Hex64(string hexString)
         {
-            return new MemoryAddress64(hexString);
+            return new Hex64(hexString);
         }
 
-        public static implicit operator MemoryAddress64(ulong value)
+        public static implicit operator Hex64(ulong value)
         {
-            return new MemoryAddress64(value);
+            return new Hex64(value);
         }
 
-        public static implicit operator MemoryAddress64(long value)
+        public static implicit operator Hex64(long value)
         {
-            return new MemoryAddress64((ulong)value);
+            return new Hex64((ulong)value);
         }
 
-        public static implicit operator MemoryAddress64(int value)
+        public static implicit operator Hex64(int value)
         {
-            return new MemoryAddress64((ulong)value);
+            return new Hex64((ulong)value);
         }
 
-        public static implicit operator MemoryAddress64(uint value)
+        public static implicit operator Hex64(uint value)
         {
-            return new MemoryAddress64((ulong)value);
+            return new Hex64((ulong)value);
         }
-        public static implicit operator MemoryAddress64(IntPtr value)
+        public static implicit operator Hex64(IntPtr value)
         {
-            return new MemoryAddress64((ulong)value);
+            return new Hex64((ulong)value);
         }
-        public static implicit operator MemoryAddress64(UIntPtr value)
+        public static implicit operator Hex64(UIntPtr value)
         {
-            return new MemoryAddress64((ulong)value);
+            return new Hex64((ulong)value);
         }
 
         #endregion
@@ -245,8 +296,8 @@ namespace HexWorks
         /// Toggles a single bit for given index 
         /// </summary>
         /// <param name="bitPosition"> Bit position must be between 0 and 63 (inclusive).</param>
-        /// <returns> returns a new MemoryAddress64 object </returns>
-        public MemoryAddress64 ToggleBit(int bitPosition)
+        /// <returns> returns a new Hex64 object </returns>
+        public Hex64 ToggleBit(int bitPosition)
         {
             if (bitPosition < 0 || bitPosition >= 64)
             {
@@ -254,7 +305,7 @@ namespace HexWorks
             }
 
             ulong bitmask = (ulong)1 << bitPosition;
-            return new MemoryAddress64(_value ^ bitmask); 
+            return new Hex64(_value ^ bitmask); 
         }
 
         /// <summary>
@@ -274,7 +325,7 @@ namespace HexWorks
             return (_value & mask) == 0 ? 0 : 1;
         }
 
-        public MemoryAddress64 SetBit(int bitPosition, int newBitValue)
+        public Hex64 SetBit(int bitPosition, int newBitValue)
         {
             if (bitPosition < 0 || bitPosition >= 64)
             {
@@ -284,28 +335,28 @@ namespace HexWorks
             ulong clearMask = ~(1UL << bitPosition);
             ulong setMask = (ulong)newBitValue << bitPosition;
             ulong result = (_value & clearMask) | setMask;
-            return new MemoryAddress64(result);
+            return new Hex64(result);
         }
 
         /// <summary>
-        /// Returns a new MemoryAddress64 for high 32 bits .
+        /// Returns a new Hex64 for high 32 bits .
         /// </summary>
-        /// <returns>returns a new MemoryAddress64 object </returns>
-        public MemoryAddress64 HighBytes()
+        /// <returns>returns a new Hex64 object </returns>
+        public Hex64 HighBytes()
         {
             var q = _value >> 32;
-            MemoryAddress64 x = new MemoryAddress64(q);
+            Hex64 x = new Hex64(q);
             return x;
         }
 
         /// <summary>
-        /// Returns a new MemoryAddress64 for low 32 bits .
+        /// Returns a new Hex64 for low 32 bits .
         /// </summary>
-        /// <returns> returns a new MemoryAddress64 object</returns>
-        public MemoryAddress64 LowBytes()
+        /// <returns> returns a new Hex64 object</returns>
+        public Hex64 LowBytes()
         {
             var q = (_value << 32) >> 32;
-            MemoryAddress64 x = new MemoryAddress64(q);
+            Hex64 x = new Hex64(q);
             return x;
 
         }
@@ -313,9 +364,9 @@ namespace HexWorks
         /// Clears the given number of the bits from begining low end-side. 
         /// </summary>
         /// <param name="numBits">Number of bits to clear </param>
-        /// <returns> returns a new MemoryAddress64 object </returns>
+        /// <returns> returns a new Hex64 object </returns>
         /// <exception cref="ArgumentException"></exception>
-        public MemoryAddress64 GetBaseAddress(int offsetSizeAsBit)
+        public Hex64 GetBaseAddress(int offsetSizeAsBit)
         {
             if (offsetSizeAsBit < 0 || offsetSizeAsBit >= 64)
             {
@@ -324,11 +375,11 @@ namespace HexWorks
 
 
             var c = (_value >> offsetSizeAsBit) << offsetSizeAsBit;
-            return new MemoryAddress64(c);
+            return new Hex64(c);
 
         }
 
-        public MemoryAddress64 Offset(long offset)
+        public Hex64 Offset(long offset)
         {
             ulong result = _value; 
             if( offset < 0)
@@ -340,28 +391,40 @@ namespace HexWorks
                 result = result + (ulong)offset; 
             }
                 
-            return new MemoryAddress64(result); 
+            return new Hex64(result); 
         }
 
-      
+        public bool TestBit(ulong data)
+        {
+            if ( (this.Value & data) == data)
+                return true;
+            else
+                return false; 
+        }
 
+        public bool TestBit(uint data)
+        {
+            if ((this.Value & data) == data)
+                return true;
+            else
+                return false;
+        }
 
-
-        public MemoryAddress64 NAND(MemoryAddress64 address)
+        public Hex64 NAND(Hex64 address)
         {
             ulong result = ~(_value & address._value);
-            return new MemoryAddress64(result); 
+            return new Hex64(result); 
         }
 
-        public MemoryAddress64 XNOR(MemoryAddress64 address)
+        public Hex64 XNOR(Hex64 address)
         {
-            return new MemoryAddress64( ~(_value ^ address._value));
+            return new Hex64( ~(_value ^ address._value));
         }
 
         
-        public MemoryAddress64 NOR(MemoryAddress64 address)
+        public Hex64 NOR(Hex64 address)
         {
-            return new MemoryAddress64(~(_value | address._value));
+            return new Hex64(~(_value | address._value));
         }
 
 

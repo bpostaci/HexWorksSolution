@@ -26,7 +26,7 @@ namespace HexWorks
 
     /* PTE64 1B NoExecute, 11B WS, 5B Reserved1, 36B pfn, 12bit flags */
 
-    public class PteEntry64 : MemoryAddress64
+    public class PteEntry64 : Hex64
     {
         public const int PTE_WORKING_SET_BITS = 11;
         public PteEntry64(ulong value) : base(value)
@@ -34,7 +34,7 @@ namespace HexWorks
         }
         public HardwarePteFlags Flags => (HardwarePteFlags)(this.Value & 0x8000000000000FFFUL);
 
-        public MemoryAddress64 Pfn => (this.Value >> 12) & 0xFFFFFFFFFUL; // 9xF = 2 ^ 36 -> pfn size is 36 bit.
+        public Hex64 Pfn => (this.Value >> 12) & 0xFFFFFFFFFUL; // 9xF = 2 ^ 36 -> pfn size is 36 bit.
 
         public ulong SoftwareWsIndex
         {

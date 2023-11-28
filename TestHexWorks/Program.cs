@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HexWorks; 
+using HexWorks;
+
+using MemoryAddress64 = HexWorks.Hex64; 
 
 namespace TestHexWorks
 {
@@ -13,10 +15,10 @@ namespace TestHexWorks
         {
 
             byte[] validByteArray = new byte[] { 0x12, 0x34,0x56,0x78 };
-            MemoryAddress32 address = new MemoryAddress32(validByteArray,false);
+            Hex32 address = new Hex32(validByteArray,false);
             Console.WriteLine( address.ToHexString());
             byte[] validByteArray2 = new byte[] { 0x12, 0x34, 0x56, 0x78 };
-            MemoryAddress32 a2 = new MemoryAddress32(validByteArray2);
+            Hex32 a2 = new Hex32(validByteArray2);
             Console.WriteLine(a2.ToHexString());
 
             PteEntry64 e = new PteEntry64(0x800000041BFB4963);
@@ -52,7 +54,7 @@ namespace TestHexWorks
 
             Console.WriteLine("TEST 32 BIT");
 
-            MemoryAddress32 address2 = 0xFFFF0000;
+            Hex32 address2 = 0xFFFF0000;
             Console.WriteLine($"Prefix            :{address2.ToHexString(true, false)} ");
             Console.WriteLine($"Prefix+Capital    :{address2.ToHexString(true, true)} ");
             Console.WriteLine($"Plain             :{address2.ToHexString(false, false)} ");

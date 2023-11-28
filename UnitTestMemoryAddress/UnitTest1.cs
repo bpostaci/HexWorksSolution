@@ -9,16 +9,17 @@ namespace UnitTestMemoryAddress
     {
         [TestMethod]
 
-        public void TestMethod1()
+        public void Test_Assignments()
         {
-            MemoryAddress64 address1 = "ffffb281e6565840";
-            MemoryAddress64 address2 = "0xffffb281e6565840";
-            MemoryAddress64 address3 = "ffffb281`e6565840";
-
+            Hex64 address1 = "ffffb281e6565840";
+            Hex64 address2 = "0xffffb281e6565840";
+            Hex64 address3 = "ffffb281`e6565840";
+            
 
             Assert.IsTrue(18446658869717784640 == address1.Value);
             Assert.IsTrue(18446658869717784640 == address2.Value);
             Assert.IsTrue(18446658869717784640 == address3.Value);
+            
 
             Assert.IsTrue(address1 == address2);
             Assert.IsTrue(address2 == address3);
@@ -29,13 +30,46 @@ namespace UnitTestMemoryAddress
 
         }
 
+        [TestMethod] public void Test_Create_From_BinaryString()
+        {
+            string validBinaryString = "10100101b";
+            Hex64 result = Hex64.FromBinaryString(validBinaryString);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(165 == result.Value);
+
+            string invalid = "10330101b";
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex64 test = Hex64.FromBinaryString(invalid);
+            });
+
+            string invalid2 = "asdadsb";
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex64 test = Hex64.FromBinaryString(invalid2);
+            });
+
+            string validLengthBinaryString   = "1000100010001000100010001000100010001000100010001000100010001000b";
+            Hex64 result2 = Hex64.FromBinaryString(validLengthBinaryString);
+            Assert.IsNotNull(result2);
+
+
+            string invalidLengthBinaryString = "10001000100010001000100010001000100010001000100010001000100010001b";
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex64 test = Hex64.FromBinaryString(invalidLengthBinaryString);
+            });
+
+
+        }
+
         [TestMethod]
         public void Test_Different_Initializations()
         {
-            MemoryAddress64 address1 = "ffffb281e6565840";
-            MemoryAddress64 address2 = "0xffffb281e6565840";
-            MemoryAddress64 address3 = "ffffb281`e6565840";
-            MemoryAddress64 address4 = 0xffffb281e6565840;
+            Hex64 address1 = "ffffb281e6565840";
+            Hex64 address2 = "0xffffb281e6565840";
+            Hex64 address3 = "ffffb281`e6565840";
+            Hex64 address4 = 0xffffb281e6565840;
 
             Assert.IsTrue(18446658869717784640 == address1.Value);
             Assert.IsTrue(18446658869717784640 == address2.Value);
@@ -46,9 +80,9 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_String_vs_Number()
         {
-            MemoryAddress64 address1 = 345;
-            MemoryAddress64 address2 = "345";
-            MemoryAddress64 address3 = 0x345;
+            Hex64 address1 = 345;
+            Hex64 address2 = "345";
+            Hex64 address3 = 0x345;
 
             Assert.IsTrue(address1 != address2);
             Assert.IsTrue(address2 == address3);
@@ -58,16 +92,16 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_Numbers()
         {
-            MemoryAddress64 address1 = -1L;
+            Hex64 address1 = -1L;
             Assert.IsTrue(address1.ToHexString(false, true) == "FFFFFFFFFFFFFFFF");
 
-            MemoryAddress64 address2 = "0xFFFFFFFFFFFFFFFF";
+            Hex64 address2 = "0xFFFFFFFFFFFFFFFF";
             Assert.IsTrue(address2 + 1L == 0);
 
-            MemoryAddress64 address3 = Int64.MinValue;
+            Hex64 address3 = Int64.MinValue;
             Assert.IsTrue(address3.ToHexString(false, true) == "8000000000000000");
 
-            MemoryAddress64 address4 = Int64.MaxValue;
+            Hex64 address4 = Int64.MaxValue;
             Assert.IsTrue(address4.ToHexString(false, true) == "7FFFFFFFFFFFFFFF");
 
         }
@@ -79,7 +113,7 @@ namespace UnitTestMemoryAddress
 
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                MemoryAddress64 p = new MemoryAddress64("abg");
+                Hex64 p = new Hex64("abg");
             });
 
         }
@@ -91,7 +125,7 @@ namespace UnitTestMemoryAddress
 
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                MemoryAddress64 p = "0x1FFFFCCCC11114444";
+                Hex64 p = "0x1FFFFCCCC11114444";
             });
 
         }
@@ -99,7 +133,7 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_High_Low_bits()
         {
-            MemoryAddress64 a1 = "0xFFEECCBB11223344";
+            Hex64 a1 = "0xFFEECCBB11223344";
             var high = a1.HighBytes();
             var low = a1.LowBytes();
 
@@ -112,9 +146,10 @@ namespace UnitTestMemoryAddress
 
         public void Test_Reference_Equality()
         {
-            MemoryAddress64 address1 = "ffffb281e6565840";
-            MemoryAddress64 address2 = "0xffffb281e6565840";
-            MemoryAddress64 address3 = "ffffb281`e6565840";
+            Hex64 address1 = "ffffb281e6565840";
+            Hex64 address2 = "0xffffb281e6565840";
+            Hex64 address3 = "ffffb281`e6565840";
+            
 
             Assert.IsTrue(address1 == address2);
             Assert.IsTrue(address2 == address3);
@@ -122,36 +157,36 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
-        public void MemoryAddress64_ValidInput_ConvertsCorrectly()
+        public void Hex64_ValidInput_ConvertsCorrectly()
         {
             byte[] validByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
-            MemoryAddress64 address = new MemoryAddress64(validByteArray, false);
+            Hex64 address = new Hex64(validByteArray, false);
 
             Assert.IsTrue(0x123456789ABCDEF0 == address.Value);
 
             //Be Careful the little-endian is the default !!!
             byte[] validByteArray2 = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
-            MemoryAddress64 address2 = new MemoryAddress64(validByteArray2, true);
+            Hex64 address2 = new Hex64(validByteArray2, true);
 
             Assert.IsTrue(0xF0DEBC9A78563412 == address2.Value);
         }
 
         [TestMethod]
-        public void MemoryAddress64_InvalidInput_ThrowsArgumentException()
+        public void Hex64_InvalidInput_ThrowsArgumentException()
         {
             byte[] invalidByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0xFF };
-            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress64(invalidByteArray));
+            Assert.ThrowsException<ArgumentException>(() => new Hex64(invalidByteArray));
 
             byte[] invalidByteArray2 = new byte[] { 0x12, 0x34 };
-            Assert.ThrowsException<ArgumentException>(() => new MemoryAddress64(invalidByteArray2));
+            Assert.ThrowsException<ArgumentException>(() => new Hex64(invalidByteArray2));
 
         }
 
         [TestMethod]
         public void Test_Sum_Substract()
         {
-            MemoryAddress64 a1 = "0xffff";
-            MemoryAddress64 a2 = "0x1";
+            Hex64 a1 = "0xffff";
+            Hex64 a2 = "0x1";
 
             var result = a1 + a2;
             Assert.IsTrue(result == "0x10000");
@@ -173,8 +208,8 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_Multiply()
         {
-            MemoryAddress64 a1 = "0xffffffffffffffff";
-            MemoryAddress64 a2 = "0xffff";
+            Hex64 a1 = "0xffffffffffffffff";
+            Hex64 a2 = "0xffff";
 
             var result = a1 * a2;   
 
@@ -183,12 +218,12 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void OperatorOverloads_Test()
         {
-            MemoryAddress64 address1 = new MemoryAddress64(10);
-            MemoryAddress64 address2 = new MemoryAddress64(5);
+            Hex64 address1 = new Hex64(10);
+            Hex64 address2 = new Hex64(5);
             
             UInt32 value = 2;
 
-            MemoryAddress64 result;
+            Hex64 result;
 
             // Addition operator
             result = address1 + address2;
