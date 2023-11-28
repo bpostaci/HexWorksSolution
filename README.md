@@ -12,13 +12,15 @@ Features:
 - Immutable Type.
 
 
-````
+
 Example:
+-you can configure more meaningful name via aliasing. 
+````
 //Project-> Properties->  "Conditional compilation symbols"
 #if X64 
-    using ma64 = HexWorks.Hex64;
+    using memoryaddress = HexWorks.Hex64;  //Memory Address 64
 #else
-    using ma32 = HexWorks.Hex32;
+    using memoryaddress = HexWorks.Hex32;  //Memory Address 32 
 #endif 
 ````
 
@@ -26,6 +28,8 @@ USAGE:
 
 Example Assignments
 ````
+using ma64 = HexWorks.Hex64;  //Memory Address 64
+
   ASSINGMENT: 
             /*Example Of Assignments*/
 
