@@ -98,10 +98,14 @@ namespace HexWorks
         /// <param name="byteArray"> By Default it should be litteendian for 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 => 0xF0DEBC9A78563412 </param>
         /// <param name="IsLittleEndian">to make it reverse make it false;for 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 => 0x123456789ABCDEF0 </param>
         /// <exception cref="ArgumentException">Array size must be 8 bytes.</exception>
-        public Hex64(byte[] byteArray,bool IsLittleEndian = true)
+        public Hex64(byte[] byteArray,bool isLittleEndian = true)
         {
-            if (byteArray.Length != 8) throw new ArgumentException("byte array size must fit with 64 bit (8 bytes)");
-            if(!IsLittleEndian) Array.Reverse(byteArray);   
+            if (byteArray == null || byteArray.Length != 8) throw new ArgumentException("byte array size must fit with 64 bit (8 bytes)");
+            if (BitConverter.IsLittleEndian != isLittleEndian)
+            {
+                // Reverse the byte array if endianness does not match the system's endianness
+                Array.Reverse(byteArray);
+            }
             _value =  (ulong) BitConverter.ToInt64(byteArray, 0);
         }
 
@@ -420,8 +424,6 @@ namespace HexWorks
         {
             return new Hex64( ~(_value ^ address._value));
         }
-
-        
         public Hex64 NOR(Hex64 address)
         {
             return new Hex64(~(_value | address._value));

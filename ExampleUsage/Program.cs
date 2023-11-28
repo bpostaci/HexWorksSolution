@@ -18,6 +18,7 @@ using HexWorks;
     using MemoryAddress = HexWorks.MemoryAddress32;
 #endif 
 
+
 using ma64 = HexWorks.Hex64; 
 
 
@@ -51,41 +52,43 @@ namespace ExampleUsage
 
             //Array Assignment (Must be 8 byte for Hex64) 
             //Array Assignment (Must be 4 byte for Hex32) 
-            ma64 arr1 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 });
+            ma64 arr1 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 });
             PrintAddress(arr1);
 
             /* OUTPUT
-                Prefix            :0xf0debcab78563412
-                Prefix+Capital    :0xF0DEBCAB78563412
-                Plain             :f0debcab78563412
-                Only Capital      :F0DEBCAB78563412
-                Signed Hex        :-0xF21435487A9CBEE
-                Signed Hex(notrim):-0x0F21435487A9CBEE
-                Bits              :1111000011011110101111001010101101111000010101100011010000010010
-                Bits Formated     :11110000.11011110.10111100.10101011.01111000.01010110.00110100.00010010
-                Bits Formated2    :11110000-11011110-10111100-10101011-01111000-01010110-00110100-00010010
-                High Bytes        :00000000f0debcab
-                Low  Bytes        :0000000078563412
+
+                    Prefix            :0xf0debc9a78563412
+                    Prefix+Capital    :0xF0DEBC9A78563412
+                    Plain             :f0debc9a78563412
+                    Only Capital      :F0DEBC9A78563412
+                    Signed Hex        :-0xF21436587A9CBEE
+                    Signed Hex(notrim):-0x0F21436587A9CBEE
+                    Bits              :1111000011011110101111001001101001111000010101100011010000010010
+                    Bits Formated     :11110000.11011110.10111100.10011010.01111000.01010110.00110100.00010010
+                    Bits Formated2    :11110000-11011110-10111100-10011010-01111000-01010110-00110100-00010010
+                    High Bytes        :00000000f0debc9a
+                    Low  Bytes        :0000000078563412
              */
 
             //LittleEndian (Default = true) 
-            ma64 arr2 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 },false );
+            ma64 arr2 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 },false );
             PrintAddress(arr2);
 
-             /* OUTPUT
-                Prefix            :0x12345678abbcdef0
-                Prefix+Capital    :0x12345678ABBCDEF0
-                Plain             :12345678abbcdef0
-                Only Capital      :12345678ABBCDEF0
-                Signed Hex        :+0x12345678ABBCDEF0
-                Signed Hex(notrim):+0x12345678ABBCDEF0
-                Bits              :0001001000110100010101100111100010101011101111001101111011110000
-                Bits Formated     :00010010.00110100.01010110.01111000.10101011.10111100.11011110.11110000
-                Bits Formated2    :00010010-00110100-01010110-01111000-10101011-10111100-11011110-11110000
-                High Bytes        :0000000012345678
-                Low  Bytes        :00000000abbcdef0 
+            /* OUTPUT
+             
+                    Prefix            :0x123456789abcdef0
+                    Prefix+Capital    :0x123456789ABCDEF0
+                    Plain             :123456789abcdef0
+                    Only Capital      :123456789ABCDEF0
+                    Signed Hex        :+0x123456789ABCDEF0
+                    Signed Hex(notrim):+0x123456789ABCDEF0
+                    Bits              :0001001000110100010101100111100010011010101111001101111011110000
+                    Bits Formated     :00010010.00110100.01010110.01111000.10011010.10111100.11011110.11110000
+                    Bits Formated2    :00010010-00110100-01010110-01111000-10011010-10111100-11011110-11110000
+                    High Bytes        :0000000012345678
+                    Low  Bytes        :000000009abcdef0
 
-                */
+             */
 
 
             /* ALLOCATE AN ADDRESS THAT WE USE */

@@ -94,15 +94,17 @@ namespace HexWorks
         /// <param name="byteArray"> Default Should be little endian 0x12345678 => { 0x78, 0x56, 0x34, 0x12 } </param>
         /// <param name="IsLitteEndian">To change it make it false 0x12345678 => { 0x12 0x34 0x56 0x78 } </param>
         /// <exception cref="ArgumentException"></exception>
-        public Hex32(byte[] byteArray,bool IsLitteEndian =true)
+        public Hex32(byte[] byteArray,bool isLittleEndian = true)
         {
-            if (byteArray.Length != 4) throw new ArgumentException("byte array size must fit with 32 bit (4 bytes)"); 
-            
-            if(!IsLitteEndian)
+            if (byteArray == null ||byteArray.Length != 4) throw new ArgumentException("byte array size must fit with 32 bit (4 bytes)");
+
+            if (BitConverter.IsLittleEndian != isLittleEndian)
             {
+                // Reverse the byte array if endianness does not match the system's endianness
                 Array.Reverse(byteArray);
             }
-            
+
+
             _value = (UInt32)BitConverter.ToUInt32(byteArray, 0);
         }
 
