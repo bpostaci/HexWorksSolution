@@ -72,6 +72,7 @@ namespace UnitTestMemoryAddress
             {
                 Hex32 a3 = "0xFFEEDDCC00112244";
             });
+
         }
         [TestMethod]
         public void Hex32_ValidInput_ConvertsCorrectly()

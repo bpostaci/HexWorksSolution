@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HexWorks
+namespace HexWorks.Extensions
 {
     [Flags]
     public enum HardwarePteFlags : ulong

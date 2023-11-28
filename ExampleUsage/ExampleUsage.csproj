@@ -110,6 +110,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HexWorks.Extensions\HexWorks.Extensions.csproj">
+      <Project>{aff39c10-97f5-4ae2-8478-7dac77734e8f}</Project>
+      <Name>HexWorks.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HexWorks\HexWorks.csproj">
       <Project>{cc023942-c937-4627-a277-8df8c21fab09}</Project>
       <Name>HexWorks</Name>

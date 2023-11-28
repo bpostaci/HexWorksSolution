@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using HexWorks;
+using HexWorks.Extensions;
 
 
 //Project-> Properties->  "Conditional compilation symbols"
@@ -41,7 +42,7 @@ namespace ExampleUsage
             ma64 p5 = ma64.FromBinaryString("1011b");                //from Binary. 
             ma64 p6 = ma64.FromHexString("0xFFAAEEEE99887766");
 
-
+            
 
             ma64 a1 = 840;   //-> Decimal Assingment
             ma64 a2 = "840"; // -> Hexedecimal Assignment
