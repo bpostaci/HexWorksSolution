@@ -40,7 +40,7 @@ Example Assignments
 
 ````
 Array Assignment
-````
+```` 
 ma64 arr1 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 });
 PrintAddress(arr1);
 
