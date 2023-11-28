@@ -24,6 +24,7 @@ Example:
 
 USAGE: 
 
+Example Assignments
 ````
   ASSINGMENT: 
             /*Example Of Assignments*/
@@ -36,6 +37,15 @@ USAGE:
              ma64 p6 = ma64.FromHexString("0xFFAAEEEE99887766");
 
 ...
+
+````
+Array Assignment
+````
+ma64 arr1 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 });
+PrintAddress(arr1);
+
+ma64 arr2 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 }, false);
+PrintAddress(arr2);
 
 
         static void Main(string[] args)
