@@ -93,7 +93,7 @@ ma64 eflags_register = GetEflagRegister();
 
 // Test flags
 if (eflags_register.TestBit((uint)EFlags.CF)) Console.WriteLine("Carry Flag Present");
-if (eflags_re
+if (eflags_register.TestBit((uint)EFlags.ZF)) Console.WriteLine("Zero Flag Present");
 
 
 ```` 
