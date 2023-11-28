@@ -40,12 +40,61 @@ Example Assignments
 
 ````
 Array Assignment
-```` 
+````
+//Array Assignment (Must be 8 byte for Hex64) 
+//Array Assignment (Must be 4 byte for Hex32) 
+// Supports Little or Big endians.
+
 ma64 arr1 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 });
 PrintAddress(arr1);
 
 ma64 arr2 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xBC, 0xDE, 0xF0 }, false);
 PrintAddress(arr2);
+
+```` 
+Bitwise Operations
+```` 
+ma64 rax = 0x100;
+ma64 rbx = 0x200;
+
+// Arithmetic operations
+var result = rax + rbx;  // SUM
+result = rax - rbx;
+result = rax * rax;
+
+// Logic operations
+result = rax & rbx;  // AND
+result = rbx ^ rbx;  // XOR
+result = rax | rbx;  // OR
+result = ~rbx;       // NOT
+result = ~(rbx & rax); // NAND
+result = ~(rax ^ rbx); // XNOR
+
+// Shifts
+result = 1UL << 63;     // 0x1000000000000000
+result = result >> 32;   // 0x0000000010000000
+
+// Bit Operations
+Console.WriteLine("Bit Operations");
+
+ma64 flag = 0xF;
+
+Console.WriteLine("FLAG: " +  flag.ToBits(8,"-"));
+ma64 nextFlag = 0; 
+flag = flag.SetBit(0, 0); // make last bit 0 => 0xE
+Console.WriteLine("FLAG: " + flag.ToBits(8, "-"));
+flag = flag.ToggleBit(3); // makes 4th bit 0 => 0x6 (note: bits starts with index 0 ) 
+Console.WriteLine("FLAG: " + flag.ToBits(8, "-"));
+
+```` 
+Supports Flags & Enums
+```` 
+ma64 eflags_register = GetEflagRegister();
+
+// Test flags
+if (eflags_register.TestBit((uint)EFlags.CF)) Console.WriteLine("Carry Flag Present");
+if (eflags_re
+
 
 ```` 
 Address Manipulation
@@ -68,7 +117,9 @@ Address Manipulation
             Console.ReadLine(); 
         }
 
-
+```` 
+Display
+```` 
         static void PrintAddress(ma64 address1)
         {
             Console.WriteLine("");
