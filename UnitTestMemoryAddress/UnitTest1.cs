@@ -1,6 +1,7 @@
 ﻿using HexWorks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 
 namespace UnitTestMemoryAddress
 {
@@ -270,6 +271,67 @@ namespace UnitTestMemoryAddress
             // Increment operator
             result = ++address1;
             Assert.IsTrue(result.Value == 10);
+        }
+
+
+        [TestMethod]
+        public void Test_Arithmetics()
+        {
+            Hex64 rax = new Hex64(0x100);
+            Hex64 rbx = new Hex64(0x200);
+
+            Assert.AreEqual(0x300, rax + rbx); // SUM
+            Assert.AreEqual(0x100, rbx - rax); // SUB
+            Assert.AreEqual(0x10000, rax * rax); // MUL
+
+            Hex64 text_rax = ~rax;  //NOT
+            Assert.AreEqual(0xFFFFFFFFFFFFFEFF, text_rax);
+
+
+            rax = Hex64.FromBinaryString("1010b");
+            rbx = Hex64.FromBinaryString("101b");
+
+
+            Assert.AreEqual(0x0000, rax & rbx); // AND
+            Assert.AreEqual(0xF, rax | rbx); // OR
+
+            rax = Hex64.FromBinaryString("1010b");
+            rbx = Hex64.FromBinaryString("1101b");
+
+            Assert.AreEqual(0x7, rax ^ rbx); // XOR
+
+            rax = 0xFF11;
+            rbx = 0x11FF;
+             
+            var result = ~(rbx & rax);
+            Assert.AreEqual(0xffffffffffffeeee, result);
+
+            var t2 = rbx.NAND(rax);
+            Assert.AreEqual(t2, result);
+
+            result = ~(rbx ^ rax);
+            t2 = rbx.XNOR(rax);
+            Assert.AreEqual(0xFFFFFFFFFFFF1111, result);
+            Assert.AreEqual(t2, result);
+
+            result = ~(rbx | rax);
+            t2 = rbx.NOR(rax);
+            Assert.AreEqual(t2, result);
+
+            /*
+            Assert.AreEqual(0xFFFFFFFFFFFFFDFF, ~rbx); // NOT
+            Assert.AreEqual(0xFFFFF800000002FF, ~(rbx & rax)); // NAND
+            Assert.AreEqual(0xFFFFFDFFFFFFFFFDFF, ~(rax ^ rbx)); // XNOR
+            */
+        }
+
+        [TestMethod]
+        public void Test_ShiftOperations()
+        {
+            ulong result = 1UL << 63; // SHIFT_LEFT
+            Assert.AreEqual(0x8000000000000000, result);
+            result = result >> 32; // SHIFT_RIGHT
+            Assert.AreEqual(0x0000000080000000, result);
         }
     }
 }
