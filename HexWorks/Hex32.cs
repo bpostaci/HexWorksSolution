@@ -351,13 +351,18 @@ namespace HexWorks
 
         public static Hex32 operator --(Hex32 address)
         {
-            UInt32 decrementedValue = address._value - 1;
-            return new Hex32(decrementedValue);
+
+            throw new NotSupportedException();
+
+
+            //UInt32 decrementedValue = address._value - 1;
+            //return new Hex32(decrementedValue);
         }
         public static Hex32 operator ++(Hex32 address)
         {
-            UInt32 decrementedValue = address._value + 1;
-            return new Hex32(decrementedValue);
+            throw new NotSupportedException();
+            //UInt32 decrementedValue = address._value + 1;
+            //return new Hex32(decrementedValue);
         }
 
 

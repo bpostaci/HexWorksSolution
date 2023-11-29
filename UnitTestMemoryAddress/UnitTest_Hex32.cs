@@ -66,6 +66,7 @@ namespace UnitTestMemoryAddress
             Hex32 a2 = "0xFFEE9922";
             Hex32 offset1 = 0x1;
 
+            Assert.IsTrue(a1 == a2); 
 
 
             Assert.ThrowsException<ArgumentException>(() =>
@@ -75,10 +76,10 @@ namespace UnitTestMemoryAddress
 
         }
         [TestMethod]
-        public void Hex32_ValidInput_ConvertsCorrectly()
+        public void Test_Hex32_ValidInput_ConvertsCorrectly()
         {
             byte[] validByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78 };
-            Hex32 address = new Hex32(validByteArray,false);
+            Hex32 address = new Hex32(validByteArray, false);
 
             Assert.IsTrue(0x12345678 == address.Value);
 
@@ -89,7 +90,7 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
-        public void Hex32_InvalidInput_ThrowsArgumentException()
+        public void Test_Hex32_InvalidInput_ThrowsArgumentException()
         {
             byte[] invalidByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A };
             Assert.ThrowsException<ArgumentException>(() => new Hex32(invalidByteArray));
@@ -107,7 +108,7 @@ namespace UnitTestMemoryAddress
             var low = a1.LowBytes();
 
             Assert.IsTrue(high == 0xffee);
-            Assert.IsTrue(low == 0x9922); 
+            Assert.IsTrue(low == 0x9922);
 
         }
 
@@ -130,7 +131,7 @@ namespace UnitTestMemoryAddress
             Hex32 address1 = "ffffffff";
             var p = address1 + 0x1;
 
-            Assert.IsTrue(p == 0x0); 
+            Assert.IsTrue(p == 0x0);
 
         }
 
@@ -165,7 +166,7 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
-        public void OperatorOverloads_Test()
+        public void Test_OperatorOverloads()
         {
             Hex32 address1 = new Hex32(10);
             Hex32 address2 = new Hex32(5);
@@ -212,12 +213,22 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(result.Value == 4294967285);
 
             // Decrement operator
-            result = --address1;
-            Assert.IsTrue(result.Value == 9);
-
+            Assert.ThrowsException<NotSupportedException>(() =>
+            {
+                result = --address1;
+                Assert.IsTrue(result.Value == 9);
+            });
             // Increment operator
-            result = ++address1;
-            Assert.IsTrue(result.Value == 10);
+            Assert.ThrowsException<NotSupportedException>(() =>
+            {
+                result = ++address1;
+                Assert.IsTrue(result.Value == 10);
+            });
+
+
+
+
+
         }
         [TestMethod]
         public void Test_Numbers()
@@ -233,6 +244,139 @@ namespace UnitTestMemoryAddress
 
             Hex32 address4 = Int32.MaxValue;
             Assert.IsTrue(address4.ToHexString(false, true) == "7FFFFFFF");
+
+        }
+        [TestMethod]
+        public void Test_Arithmetics()
+        {
+            Hex32 rax = new Hex32(0x100);
+            Hex32 rbx = new Hex32(0x200);
+
+            Assert.AreEqual(0x300, rax + rbx); // SUM
+            Assert.AreEqual(0x100, rbx - rax); // SUB
+            Assert.AreEqual(0x10000, rax * rax); // MUL
+
+            Hex32 text_rax = ~rax;  //NOT
+            Assert.AreEqual(0xFFFFFEFF, text_rax);
+
+            rax = Hex32.FromBinaryString("1010b");
+            rbx = Hex32.FromBinaryString("101b");
+
+
+            Assert.AreEqual(0x0000, rax & rbx); // AND
+            Assert.AreEqual(0xF, rax | rbx); // OR
+
+            rax = Hex32.FromBinaryString("1010b");
+            rbx = Hex32.FromBinaryString("1101b");
+
+            Assert.AreEqual(0x7, rax ^ rbx); // XOR
+
+            rax = 0xFF11;
+            rbx = 0x11FF;
+
+            var result = ~(rbx & rax);
+            Assert.AreEqual(0xffffeeee, result);
+
+            var t2 = rbx.NAND(rax);
+            Assert.AreEqual(t2, result);
+
+            result = ~(rbx ^ rax);
+            t2 = rbx.XNOR(rax);
+            Assert.AreEqual(0xFFFF1111, result);
+            Assert.AreEqual(t2, result);
+
+            result = ~(rbx | rax);
+            t2 = rbx.NOR(rax);
+            Assert.AreEqual(t2, result);
+
+        }
+
+        [TestMethod]
+        public void Test_Create_From_BinaryString()
+        {
+            string validBinaryString = "10100101b";
+            Hex32 result = Hex32.FromBinaryString(validBinaryString);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(165 == result.Value);
+
+            string invalid = "10330101b";
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex32 test = Hex32.FromBinaryString(invalid);
+            });
+
+            string invalid2 = "asdadsb";
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex32 test = Hex32.FromBinaryString(invalid2);
+            });
+
+            string validLengthBinaryString = "10001000100010001000100010001000b";
+            Hex32 result2 = Hex32.FromBinaryString(validLengthBinaryString);
+            Assert.IsNotNull(result2);
+
+
+            string invalidLengthBinaryString = "100010001000100010001000100010001b";
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex32 test = Hex32.FromBinaryString(invalidLengthBinaryString);
+            });
+
+
+        }
+
+
+        [TestMethod]
+        public void Test_ShiftOperations()
+        {
+            Hex32 result = 1U << 31; // SHIFT_LEFT
+            Assert.AreEqual(0x80000000, result);
+            result = result >> 16; // SHIFT_RIGHT
+            Assert.AreEqual((uint)0x00008000, result);
+        }
+
+        [TestMethod]
+        public void Test_String_vs_Number()
+        {
+            Hex32 address1 = 345;
+            Hex32 address2 = "345";
+            Hex32 address3 = 0x345;
+
+            Assert.IsTrue(address1 != address2);
+            Assert.IsTrue(address2 == address3);
+        }
+        [TestMethod]
+
+        public void Test_not_a_hex_string_initialization()
+        {
+
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex32 p = new Hex32("abg");
+            });
+
+        }
+
+        [TestMethod]
+        public void Test_Multiply()
+        {
+            Hex32 a1 = "0xffffffff";
+            Hex32 a2 = "0xffff";
+
+            var result = a1 * a2;
+            //Allows Overflow.
+            Assert.IsTrue(0xffff0001 == result);
+        }
+
+        [TestMethod]
+
+        public void Test_hex_huge_string_initialization()
+        {
+
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                Hex32 p = "0x1FFFFCCCC11114444";
+            });
 
         }
     }

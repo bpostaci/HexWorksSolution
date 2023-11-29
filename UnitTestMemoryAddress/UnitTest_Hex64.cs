@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace UnitTestMemoryAddress
 {
     [TestClass]
-    public class UnitTest1
+    public class UnitTest_Hex64
     {
         [TestMethod]
 
@@ -158,7 +158,7 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
-        public void Hex64_ValidInput_ConvertsCorrectly()
+        public void Test_Hex64_ValidInput_ConvertsCorrectly()
         {
             byte[] validByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 };
             Hex64 address = new Hex64(validByteArray, false);
@@ -173,7 +173,7 @@ namespace UnitTestMemoryAddress
         }
 
         [TestMethod]
-        public void Hex64_InvalidInput_ThrowsArgumentException()
+        public void Test_Hex64_InvalidInput_ThrowsArgumentException()
         {
             byte[] invalidByteArray = new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0, 0xFF };
             Assert.ThrowsException<ArgumentException>(() => new Hex64(invalidByteArray));
@@ -212,12 +212,13 @@ namespace UnitTestMemoryAddress
             Hex64 a1 = "0xffffffffffffffff";
             Hex64 a2 = "0xffff";
 
-            var result = a1 * a2;   
-
-        }
+            var result = a1 * a2;
+            //Allows Overflow.
+            Assert.IsTrue(0xffffffffffff0001 == result);
+         }
 
         [TestMethod]
-        public void OperatorOverloads_Test()
+        public void Test_OperatorOverloads()
         {
             Hex64 address1 = new Hex64(10);
             Hex64 address2 = new Hex64(5);
@@ -265,12 +266,19 @@ namespace UnitTestMemoryAddress
             Assert.IsTrue(result.Value == 18446744073709551605);
 
             // Decrement operator
-            result = --address1;
-            Assert.IsTrue(result.Value == 9);
+            Assert.ThrowsException<NotSupportedException>(() =>
+            {
+                result = --address1;
+                Assert.IsTrue(result.Value == 9);
+
+            });
 
             // Increment operator
-            result = ++address1;
-            Assert.IsTrue(result.Value == 10);
+            Assert.ThrowsException<NotSupportedException>(() =>
+            {
+                result = ++address1;
+                Assert.IsTrue(result.Value == 10);
+            });
         }
 
 
@@ -328,10 +336,20 @@ namespace UnitTestMemoryAddress
         [TestMethod]
         public void Test_ShiftOperations()
         {
-            ulong result = 1UL << 63; // SHIFT_LEFT
+            Hex64 result = 1UL << 63; // SHIFT_LEFT
             Assert.AreEqual(0x8000000000000000, result);
             result = result >> 32; // SHIFT_RIGHT
             Assert.AreEqual(0x0000000080000000, result);
+        }
+
+        [TestMethod]
+        public void Test_OverFlow()
+        {
+            Hex64 address1 = "ffffffffffffffff";
+            var p = address1 + 0x1;
+
+            Assert.IsTrue(p == 0x0);
+
         }
     }
 }

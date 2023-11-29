@@ -250,13 +250,15 @@ namespace HexWorks
 
         public static Hex64 operator --(Hex64 address)
         {
-            ulong decrementedValue = address._value - 1;
-            return new Hex64(decrementedValue);
+            throw new NotSupportedException();
+            //ulong decrementedValue = address._value - 1;
+            //return new Hex64(decrementedValue);
         }
         public static Hex64 operator ++(Hex64 address)
         {
-            ulong decrementedValue = address._value +1;
-            return new Hex64(decrementedValue);
+            throw new NotSupportedException(); 
+            //ulong decrementedValue = address._value +1;
+            //return new Hex64(decrementedValue);
         }
 
 

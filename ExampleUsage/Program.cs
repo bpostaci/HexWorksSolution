@@ -141,8 +141,9 @@ namespace ExampleUsage
             result = rax - rbx;
             result = rax * rax;  // May create Overflow exception if exceeded ulong !!!
 
-            result = rax++;  // !! Be Careful it is an immutable type actual value doesn't changes !!!
-            result = rbx--;  // !! Be Careful it is an immutable type actual value doesn't changes !!!
+            //Fires Not Supported Exception
+            //result = rax++;  // !! Be Careful it is an immutable type actual value doesn't changes !!!
+            //result = rbx--;  // !! Be Careful it is an immutable type actual value doesn't changes !!!
 
             /*Logic*/
             result = rax & rbx; //AND

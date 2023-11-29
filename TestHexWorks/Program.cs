@@ -18,6 +18,7 @@ namespace TestHexWorks
             Hex64 rax = 0xFF11;
             Hex64 rbx = 0x11FF;
 
+            
 
             var result = ~(rbx ^ rax);
             var t2 = rbx.XNOR(rax); 
