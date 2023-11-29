@@ -14,14 +14,13 @@ using HexWorks.Extensions;
 
 //Project-> Properties->  "Conditional compilation symbols"
 #if X64 
-    using MemoryAddress = HexWorks.Hex64;
+   // using MemoryAddress = HexWorks.Hex64;
 #else
-    using MemoryAddress = HexWorks.MemoryAddress32;
+   // using MemoryAddress = HexWorks.Hex32;
 #endif 
 
 
-using ma64 = HexWorks.Hex64; 
-
+//using ma64 = HexWorks.Hex64; 
 
 
 namespace ExampleUsage
@@ -35,17 +34,17 @@ namespace ExampleUsage
 
             /*Example Of Assignments*/
 
-            ma64 p1 = 0xFFAAEEEE99887766;     //Hex Number Assignment
-            ma64 p2 = "0xFFAAEEEE99887766";   //Hex String Assignment
-            ma64 p3 = "FFAAEEEE`99887766";    //Hex String Assignment
-            ma64 p4 = "FFAAEEEE99887766";
-            ma64 p5 = ma64.FromBinaryString("1011b");                //from Binary. 
-            ma64 p6 = ma64.FromHexString("0xFFAAEEEE99887766");
+            Hex64 p1 = 0xFFAAEEEE99887766;     //Hex Number Assignment
+            Hex64 p2 = "0xFFAAEEEE99887766";   //Hex String Assignment
+            Hex64 p3 = "FFAAEEEE`99887766";    //Hex String Assignment
+            Hex64 p4 = "FFAAEEEE99887766";
+            Hex64 p5 = Hex64.FromBinaryString("1011b");                //from Binary. 
+            Hex64 p6 = Hex64.FromHexString("0xFFAAEEEE99887766");
 
             
 
-            ma64 a1 = 840;   //-> Decimal Assingment
-            ma64 a2 = "840"; // -> Hexedecimal Assignment
+            Hex64 a1 = 840;   //-> Decimal Assingment
+            Hex64 a2 = "840"; // -> Hexedecimal Assignment
             if (a1 != a2) Console.WriteLine($"{a1.ToHexString()} not equals {a2.ToHexString()}");
             /* OUTPUT 
              0000000000000348 not equals 0000000000000840
@@ -53,7 +52,7 @@ namespace ExampleUsage
 
             //Array Assignment (Must be 8 byte for Hex64) 
             //Array Assignment (Must be 4 byte for Hex32) 
-            ma64 arr1 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 });
+            Hex64 arr1 = new Hex64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 });
             PrintAddress(arr1);
 
             /* OUTPUT
@@ -72,7 +71,7 @@ namespace ExampleUsage
              */
 
             //LittleEndian (Default = true) 
-            ma64 arr2 = new ma64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 },false );
+            Hex64 arr2 = new Hex64(new byte[] { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xF0 },false );
             PrintAddress(arr2);
 
             /* OUTPUT
@@ -97,10 +96,10 @@ namespace ExampleUsage
             IntPtr startOffset = proc.MainModule.BaseAddress;
 
             /* Example Of Offseting */
-            ma64 address1 = startOffset;
+            Hex64 address1 = startOffset;
             PrintAddress(address1);
 
-            ma64 offset = 0x1000;
+            Hex64 offset = 0x1000;
             var nextAddress = address1 + offset;
             PrintAddress(nextAddress);
 
@@ -133,8 +132,8 @@ namespace ExampleUsage
 
             /* BITWISE OPERATINS */
 
-            ma64 rax = 0x100;
-            ma64 rbx = 0x200;
+            Hex64 rax = 0x100;
+            Hex64 rbx = 0x200;
 
             /*Artimetichs*/
             var result = rax + rbx; // SUM 
@@ -166,10 +165,10 @@ namespace ExampleUsage
             Console.WriteLine();
             Console.WriteLine("Bit Operations");
 
-            ma64 flag = 0xF;
+            Hex64 flag = 0xF;
 
             Console.WriteLine("FLAG: " +  flag.ToBits(8,"-"));
-            ma64 nextFlag = 0; 
+            Hex64 nextFlag = 0; 
             flag = flag.SetBit(0, 0); // make last bit 0 => 0xE
             Console.WriteLine("FLAG: " + flag.ToBits(8, "-"));
             flag = flag.ToggleBit(3); // makes 4th bit 0 => 0x6 (note: bits starts with index 0 ) 
@@ -210,7 +209,7 @@ namespace ExampleUsage
 
             /* FLAG ENUMS */
 
-            ma64 eflags_register = GetEflagRegister(); 
+            Hex64 eflags_register = GetEflagRegister(); 
                 
             /*test flags*/
             if( eflags_register.TestBit((uint) EFlags.CF) ) Console.WriteLine("Carry Flag Present" );
@@ -221,7 +220,7 @@ namespace ExampleUsage
             Console.ReadLine(); 
         }
 
-        static void PrintAddress(ma64 address1)
+        static void PrintAddress(Hex64 address1)
         {
             Console.WriteLine("");
             Console.WriteLine($"Prefix            :{address1.ToHexString(true, false)} ");
@@ -253,9 +252,9 @@ namespace ExampleUsage
             */
         }
 
-        static ma64 GetEflagRegister()
+        static Hex64 GetEflagRegister()
         {
-            return new ma64((ulong)(EFlags.CF | EFlags.ZF | EFlags.PF)); 
+            return new Hex64((ulong)(EFlags.CF | EFlags.ZF | EFlags.PF)); 
         }
     }
 }
